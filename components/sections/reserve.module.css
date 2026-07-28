@@ -1,0 +1,17 @@
+.reserveGrid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; align-items: flex-start; }
+.reserveForm { background: var(--gradient-card); border: 1px solid var(--clr-border); border-radius: var(--radius-2xl); padding: 2rem; }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.error { color: var(--clr-red-500); font-size: 0.8rem; margin-top: 0.25rem; display: block; }
+.reserveInfo { display: flex; flex-direction: column; gap: 1.5rem; }
+.infoCard { background: var(--gradient-card); border: 1px solid var(--clr-border); border-radius: var(--radius-xl); padding: 1.5rem; }
+.infoCard h3 { font-family: var(--ff-heading); font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; }
+.infoCard p { color: var(--clr-text-muted); font-size: 0.875rem; line-height: 1.6; }
+.confirmCard { background: var(--gradient-card); border: 1px solid var(--clr-border-strong); border-radius: var(--radius-xl); padding: 1.5rem; margin-top: 1.5rem; text-align: left; }
+.confirmRow { display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid var(--clr-border); color: var(--clr-text-muted); }
+.confirmRow:last-child { border-bottom: none; }
+.confirmRow strong { color: var(--clr-text-primary); }
+
+@media (max-width: 768px) {
+  .reserveGrid { grid-template-columns: 1fr; }
+  .formRow { grid-template-columns: 1fr; }
+}
