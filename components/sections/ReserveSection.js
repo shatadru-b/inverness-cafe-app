@@ -137,7 +137,7 @@ export default function ReserveSection() {
                 <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>📞</span>
                 <h3>Prefer to Call?</h3>
                 <p>Ring us directly on</p>
-                <a href="tel:+441234567890" style={{ color: 'var(--clr-amber-400)', fontWeight: 600, fontSize: '1.125rem' }}>+44 1234 567 890</a>
+                <a href="tel:+447554284033" style={{ color: 'var(--clr-amber-400)', fontWeight: 600, fontSize: '1.125rem' }}>+44 7554 284 033</a>
               </div>
               <div className={styles.infoCard}>
                 <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>👨‍👩‍👧‍👦</span>

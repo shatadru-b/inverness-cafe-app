@@ -183,7 +183,7 @@ export default function CartPage() {
                 💬 Order via WhatsApp
               </button>
 
-              <a href="tel:+441234567890" className="btn btn-outline" style={{ width: '100%', marginTop: '0.75rem', textAlign: 'center', display: 'block' }}>
+              <a href="tel:+447554284033" className="btn btn-outline" style={{ width: '100%', marginTop: '0.75rem', textAlign: 'center', display: 'block' }}>
                 📞 Call to Order
               </a>
             </div>

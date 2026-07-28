@@ -76,7 +76,7 @@ export default function ContactSection() {
                   <div>
                     <h4 className={styles.infoTitle}>Phone & WhatsApp</h4>
                     <p className={styles.infoText}>
-                      <a href="tel:+441234567890" style={{ color: 'var(--clr-amber-400)' }}>+44 1234 567 890</a>
+                      <a href="tel:+447554284033" style={{ color: 'var(--clr-amber-400)' }}>+44 7554 284 033</a>
                     </p>
                   </div>
                 </div>
