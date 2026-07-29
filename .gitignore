@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+functions/.env
+functions/.secret.local
 
 # vercel
 .vercel
@@ -47,3 +50,4 @@ firebase-debug.log*
 
 # local previews
 public/images/menu/_preview/
+functions/node_modules/

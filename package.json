@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "npm run build && npx firebase-tools deploy --only hosting --project inverness-cafe-app"
+    "deploy": "npm run build && npx firebase-tools deploy --only hosting --project inverness-cafe-app",
+    "deploy:functions": "npx firebase-tools deploy --only functions --project inverness-cafe-app",
+    "deploy:all": "npm run build && npx firebase-tools deploy --only hosting,functions --project inverness-cafe-app"
   },
   "dependencies": {
     "firebase": "^12.16.0",

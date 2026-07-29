@@ -1,0 +1,52 @@
+.box {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--clr-border);
+}
+
+.title {
+  font-family: var(--ff-heading);
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: var(--clr-text-muted);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.sandboxNote {
+  font-size: 0.8rem;
+  color: var(--clr-amber-400);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  margin: 0 0 0.85rem;
+  line-height: 1.45;
+}
+
+.cardMount {
+  min-height: 90px;
+  margin-bottom: 0.85rem;
+  /* Square injects iframe inputs here */
+}
+
+.status {
+  font-size: 0.85rem;
+  color: var(--clr-text-secondary);
+  margin: 0 0 0.65rem;
+}
+
+.payBtn {
+  width: 100%;
+  padding: 0.95rem 1rem;
+  font-size: 1.05rem;
+}
+
+.payBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

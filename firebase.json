@@ -1,4 +1,17 @@
 {
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
   "hosting": {
     "public": "out",
     "ignore": [
@@ -8,6 +21,16 @@
     ],
     "cleanUrls": true,
     "trailingSlash": true,
+    "rewrites": [
+      {
+        "source": "/api/createPayment",
+        "function": "createPayment"
+      },
+      {
+        "source": "/api/paymentConfig",
+        "function": "paymentConfig"
+      }
+    ],
     "headers": [
       {
         "source": "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)",
