@@ -2,20 +2,22 @@
  * Square payment Cloud Function
  * Client tokenizes card on-site; this function charges it securely.
  *
- * Secrets (set with firebase functions:config or env):
- *   SQUARE_ACCESS_TOKEN
- *   SQUARE_LOCATION_ID
- *   SQUARE_ENVIRONMENT = sandbox | production
+ * Configure via functions/.env (never commit):
+ *   SQUARE_ACCESS_TOKEN=...
+ *   SQUARE_LOCATION_ID=...
+ *   SQUARE_ENVIRONMENT=sandbox|production
  */
 
 const { onRequest } = require('firebase-functions/v2/https');
 const { setGlobalOptions } = require('firebase-functions/v2');
-const { defineSecret, defineString } = require('firebase-functions/params');
+const { defineString } = require('firebase-functions/params');
 const { randomUUID } = require('crypto');
+const { SquareClient, SquareEnvironment } = require('square');
 
 setGlobalOptions({ region: 'europe-west2', maxInstances: 10 });
 
-const squareAccessToken = defineSecret('SQUARE_ACCESS_TOKEN');
+// Loaded from functions/.env on deploy (defineString — no Secret Manager required)
+const squareAccessToken = defineString('SQUARE_ACCESS_TOKEN', { default: '' });
 const squareLocationId = defineString('SQUARE_LOCATION_ID', { default: '' });
 const squareEnvironment = defineString('SQUARE_ENVIRONMENT', { default: 'sandbox' });
 
@@ -50,7 +52,6 @@ function formatOrderNote(order) {
 
 exports.createPayment = onRequest(
   {
-    secrets: [squareAccessToken],
     cors: true,
     invoker: 'public',
   },
@@ -78,27 +79,27 @@ exports.createPayment = onRequest(
         res.status(400).json({ error: 'Invalid amount' });
         return;
       }
-
-      // Soft cap for cafe orders (safety)
       if (amountPence > 500000) {
         res.status(400).json({ error: 'Amount too large' });
         return;
       }
 
-      const accessToken = squareAccessToken.value();
+      const accessToken =
+        squareAccessToken.value() || process.env.SQUARE_ACCESS_TOKEN || '';
       if (!accessToken) {
         res.status(500).json({
-          error: 'Square is not configured on the server. Set SQUARE_ACCESS_TOKEN secret.',
+          error: 'Square is not configured. Set SQUARE_ACCESS_TOKEN in functions/.env',
         });
         return;
       }
 
-      const locationId = squareLocationId.value() || process.env.SQUARE_LOCATION_ID;
-      const envName = (squareEnvironment.value() || 'sandbox').toLowerCase();
-
-      // Dynamic import for ESM square SDK if needed — package is CJS-friendly in recent versions
-      const square = require('square');
-      const { SquareClient, SquareEnvironment } = square;
+      const locationId =
+        squareLocationId.value() || process.env.SQUARE_LOCATION_ID || '';
+      const envName = (
+        squareEnvironment.value() ||
+        process.env.SQUARE_ENVIRONMENT ||
+        'sandbox'
+      ).toLowerCase();
 
       const client = new SquareClient({
         token: accessToken,
@@ -117,14 +118,9 @@ exports.createPayment = onRequest(
         },
         autocomplete: true,
         note: formatOrderNote(order),
-        buyerEmailAddress: order?.customer?.email || undefined,
       };
 
-      if (locationId) {
-        paymentBody.locationId = locationId;
-      }
-
-      // Reference id helps find orders in Square dashboard
+      if (locationId) paymentBody.locationId = locationId;
       if (order?.customer?.phone) {
         paymentBody.referenceId = String(order.customer.phone).slice(0, 40);
       }
@@ -155,7 +151,6 @@ exports.createPayment = onRequest(
   }
 );
 
-/** Health / config check (no secrets exposed) */
 exports.paymentConfig = onRequest(
   {
     cors: true,
@@ -169,8 +164,10 @@ exports.paymentConfig = onRequest(
     }
     res.status(200).json({
       ok: true,
-      environment: squareEnvironment.value() || 'sandbox',
-      locationConfigured: Boolean(squareLocationId.value() || process.env.SQUARE_LOCATION_ID),
+      environment: squareEnvironment.value() || process.env.SQUARE_ENVIRONMENT || 'sandbox',
+      locationConfigured: Boolean(
+        squareLocationId.value() || process.env.SQUARE_LOCATION_ID
+      ),
       currency: 'GBP',
     });
   }

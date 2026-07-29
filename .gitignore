@@ -51,3 +51,4 @@ firebase-debug.log*
 # local previews
 public/images/menu/_preview/
 functions/node_modules/
+.env.local
