@@ -1,5 +1,20 @@
 {
   "projects": {
-    "default": "inverness-cafe-app"
-  }
+    "default": "inverness-cafe-app",
+    "staging": "inverness-cafe-app",
+    "production": "inverness-cafe-app"
+  },
+  "targets": {
+    "inverness-cafe-app": {
+      "hosting": {
+        "staging": [
+          "inverness-cafe-app-stg"
+        ],
+        "production": [
+          "inverness-cafe-app"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

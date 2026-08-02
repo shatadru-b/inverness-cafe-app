@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './reserve.module.css';
 
 export default function ReserveSection() {
+  const restaurant = useRestaurant();
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '', date: '', time: '', partySize: '2', specialRequests: ''
   });
@@ -129,15 +131,15 @@ export default function ReserveSection() {
               <div className={styles.infoCard}>
                 <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>🕐</span>
                 <h3>Opening Hours</h3>
-                <p>Mon – Thu: 11:00 – 22:00</p>
-                <p>Fri – Sat: 11:00 – 23:00</p>
-                <p>Sunday: 12:00 – 21:00</p>
+                {restaurant.hours.map((h) => (
+                  <p key={h.label}>{h.label}: {h.opens} – {h.closes}</p>
+                ))}
               </div>
               <div className={styles.infoCard}>
                 <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>📞</span>
                 <h3>Prefer to Call?</h3>
                 <p>Ring us directly on</p>
-                <a href="tel:+447554284033" style={{ color: 'var(--clr-amber-400)', fontWeight: 600, fontSize: '1.125rem' }}>+44 7554 284 033</a>
+                <a href={`tel:${restaurant.phone.e164}`} style={{ color: 'var(--clr-amber-400)', fontWeight: 600, fontSize: '1.125rem' }}>{restaurant.phone.display}</a>
               </div>
               <div className={styles.infoCard}>
                 <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>👨‍👩‍👧‍👦</span>

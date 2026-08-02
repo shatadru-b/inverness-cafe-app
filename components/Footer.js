@@ -1,11 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useRestaurant } from '@/lib/RestaurantContext';
 
 export default function Footer() {
   const pathname = usePathname();
   const router = useRouter();
+  const restaurant = useRestaurant();
   const isHome = pathname === '/' || pathname === '';
 
   if (pathname && pathname.startsWith('/admin')) {
@@ -34,19 +35,19 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <a href="/#home" className="nav-brand" onClick={(e) => goToSection('home', e)}>
-              <div className="nav-brand-icon">🍕</div>
+              <div className="nav-brand-icon">{restaurant.logo.emoji}</div>
               <div className="nav-brand-text">
-                <span className="nav-brand-name">Inverness</span>
-                <span className="nav-brand-sub">Cafe & Pizzeria</span>
+                <span className="nav-brand-name">{restaurant.brandName}</span>
+                <span className="nav-brand-sub">{restaurant.brandSub}</span>
               </div>
             </a>
             <p className="footer-brand-text">
-              Bringing the best of Italian cuisine to the Scottish Highlands. Handcrafted pizzas, fresh pasta, and gourmet comfort food.
+              {restaurant.content.footerBlurb}
             </p>
             <div className="footer-social">
-              <a href="#" aria-label="Facebook">📘</a>
-              <a href="#" aria-label="Instagram">📷</a>
-              <a href="#" aria-label="TripAdvisor">🗺️</a>
+              <a href={restaurant.social.facebook} aria-label="Facebook">📘</a>
+              <a href={restaurant.social.instagram} aria-label="Instagram">📷</a>
+              <a href={restaurant.social.tripadvisor} aria-label="TripAdvisor">🗺️</a>
             </div>
           </div>
 
@@ -78,25 +79,19 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Opening Hours</h4>
             <div className="footer-hours">
-              <div className="footer-hours-row">
-                <span>Mon – Thu</span>
-                <span>11:00 – 22:00</span>
-              </div>
-              <div className="footer-hours-row">
-                <span>Fri – Sat</span>
-                <span>11:00 – 23:00</span>
-              </div>
-              <div className="footer-hours-row">
-                <span>Sunday</span>
-                <span>12:00 – 21:00</span>
-              </div>
+              {restaurant.hours.map((h) => (
+                <div className="footer-hours-row" key={h.label}>
+                  <span>{h.label}</span>
+                  <span>{h.opens} – {h.closes}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} Inverness Cafe & Pizzeria. All rights reserved.</p>
-          <p>Made with ❤️ in the Scottish Highlands</p>
+          <p>&copy; {new Date().getFullYear()} {restaurant.name}. All rights reserved.</p>
+          <p>{restaurant.content.footerCredit}</p>
         </div>
       </div>
     </footer>

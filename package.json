@@ -6,12 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "deploy": "npm run build && npx firebase-tools deploy --only hosting --project inverness-cafe-app",
-    "deploy:functions": "npx firebase-tools deploy --only functions --project inverness-cafe-app",
-    "deploy:all": "npm run build && npx firebase-tools deploy --only hosting,functions --project inverness-cafe-app"
+    "deploy": "npm run build && npx firebase-tools deploy --only hosting:production --project production",
+    "deploy:staging": "npm run build && npx firebase-tools deploy --only hosting:staging --project staging",
+    "deploy:production": "npm run build && npx firebase-tools deploy --only hosting:production --project production",
+    "deploy:functions": "npx firebase-tools deploy --only functions --project production",
+    "deploy:all": "npm run build && npx firebase-tools deploy --only hosting:production,functions --project production"
   },
   "dependencies": {
-    "firebase": "^12.16.0",
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4"

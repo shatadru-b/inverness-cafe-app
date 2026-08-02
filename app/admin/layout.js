@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './admin.module.css';
 
 export default function AdminLayout({ children }) {
   const pathname = usePathname();
+  const restaurant = useRestaurant();
 
   // If on login page, don't show the sidebar
   if (pathname === '/admin') {
@@ -16,9 +18,9 @@ export default function AdminLayout({ children }) {
     <div className={styles.adminLayout}>
       <aside className={styles.adminSidebar}>
         <div className={styles.sidebarHeader}>
-          <div className="nav-brand-icon" style={{ width: 40, height: 40, fontSize: '1.25rem' }}>🍕</div>
+          <div className="nav-brand-icon" style={{ width: 40, height: 40, fontSize: '1.25rem' }}>{restaurant.logo.emoji}</div>
           <div>
-            <div style={{ fontFamily: 'var(--ff-heading)', fontWeight: 700, lineHeight: 1.1 }}>Inverness</div>
+            <div style={{ fontFamily: 'var(--ff-heading)', fontWeight: 700, lineHeight: 1.1 }}>{restaurant.brandName}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--clr-amber-400)' }}>Admin Panel</div>
           </div>
         </div>

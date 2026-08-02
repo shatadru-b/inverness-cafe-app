@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './contact.module.css';
 
 export default function ContactSection() {
+  const restaurant = useRestaurant();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -53,14 +55,16 @@ export default function ContactSection() {
                   <div>
                     <h4 className={styles.infoTitle}>Location</h4>
                     <p className={styles.infoText}>
-                      Inverness Cafe &amp; Pizzeria<br />
-                      Academy Street<br />
-                      Inverness, IV1 1LU<br />
-                      Scottish Highlands
+                      {restaurant.address.lines.map((line, i) => (
+                        <span key={line}>
+                          {line}
+                          {i < restaurant.address.lines.length - 1 && <br />}
+                        </span>
+                      ))}
                     </p>
                     <p className={styles.infoText} style={{ marginTop: '0.5rem' }}>
                       <a
-                        href="https://maps.app.goo.gl/kEYAozW9M2BLXfwQ8"
+                        href={restaurant.maps.url}
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{ color: 'var(--clr-amber-400)' }}
@@ -76,7 +80,7 @@ export default function ContactSection() {
                   <div>
                     <h4 className={styles.infoTitle}>Phone & WhatsApp</h4>
                     <p className={styles.infoText}>
-                      <a href="tel:+447554284033" style={{ color: 'var(--clr-amber-400)' }}>+44 7554 284 033</a>
+                      <a href={`tel:${restaurant.phone.e164}`} style={{ color: 'var(--clr-amber-400)' }}>{restaurant.phone.display}</a>
                     </p>
                   </div>
                 </div>
@@ -86,7 +90,7 @@ export default function ContactSection() {
                   <div>
                     <h4 className={styles.infoTitle}>Email</h4>
                     <p className={styles.infoText}>
-                      <a href="mailto:hello@invernesscafe.co.uk" style={{ color: 'var(--clr-amber-400)' }}>hello@invernesscafe.co.uk</a>
+                      <a href={`mailto:${restaurant.email}`} style={{ color: 'var(--clr-amber-400)' }}>{restaurant.email}</a>
                     </p>
                   </div>
                 </div>
@@ -96,9 +100,12 @@ export default function ContactSection() {
                   <div>
                     <h4 className={styles.infoTitle}>Hours</h4>
                     <p className={styles.infoText}>
-                      Mon-Thu: 11:00 - 22:00<br />
-                      Fri-Sat: 11:00 - 23:00<br />
-                      Sunday: 12:00 - 21:00
+                      {restaurant.hours.map((h, i) => (
+                        <span key={h.label}>
+                          {h.shortLabel}: {h.opens} - {h.closes}
+                          {i < restaurant.hours.length - 1 && <br />}
+                        </span>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -152,14 +159,14 @@ export default function ContactSection() {
 
       <div style={{ height: '400px', background: 'var(--clr-bg-secondary)', position: 'relative' }}>
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1084.5!2d-4.2261793!3d57.4804113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x488f7125aa03ab5f%3A0xb982d725ad27c4f4!2sInverness%20Cafe%20%26%20Pizzeria!5e0!3m2!1sen!2suk!4v1710000000000!5m2!1sen!2suk"
+          src={restaurant.maps.embed}
           width="100%"
           height="100%"
           style={{ border: 0, filter: 'grayscale(0.35) contrast(1.1) opacity(0.95)' }}
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          title="Inverness Cafe & Pizzeria — Academy Street, Inverness"
+          title={`${restaurant.name} — ${restaurant.address.street}, ${restaurant.address.locality}`}
         />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, pointerEvents: 'none', background: 'linear-gradient(to bottom, var(--clr-bg-primary) 0%, transparent 15%, transparent 85%, var(--clr-bg-primary) 100%)' }} />
       </div>

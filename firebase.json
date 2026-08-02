@@ -12,35 +12,70 @@
       ]
     }
   ],
-  "hosting": {
-    "public": "out",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "cleanUrls": true,
-    "trailingSlash": true,
-    "rewrites": [
-      {
-        "source": "/api/createPayment",
-        "function": "createPayment"
-      },
-      {
-        "source": "/api/paymentConfig",
-        "function": "paymentConfig"
-      }
-    ],
-    "headers": [
-      {
-        "source": "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public,max-age=31536000,immutable"
-          }
-        ]
-      }
-    ]
-  }
+  "hosting": [
+    {
+      "target": "staging",
+      "public": "out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": true,
+      "rewrites": [
+        {
+          "source": "/api/createPayment",
+          "function": "createPayment"
+        },
+        {
+          "source": "/api/paymentConfig",
+          "function": "paymentConfig"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "production",
+      "public": "out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": true,
+      "rewrites": [
+        {
+          "source": "/api/createPayment",
+          "function": "createPayment"
+        },
+        {
+          "source": "/api/paymentConfig",
+          "function": "paymentConfig"
+        }
+      ],
+      "headers": [
+        {
+          "source": "**/*.@(js|css|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public,max-age=31536000,immutable"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

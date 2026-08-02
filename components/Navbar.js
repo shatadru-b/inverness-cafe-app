@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
+import { useRestaurant } from '@/lib/RestaurantContext';
 
 const SECTION_IDS = ['home', 'menu', 'reserve', 'about', 'contact'];
 
@@ -22,6 +23,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { cartCount } = useCart();
+  const restaurant = useRestaurant();
   const isHome = pathname === '/' || pathname === '';
 
   useEffect(() => {
@@ -119,10 +121,10 @@ export default function Navbar() {
             goToSection('home');
           }}
         >
-          <div className="nav-brand-icon">🍕</div>
+          <div className="nav-brand-icon">{restaurant.logo.emoji}</div>
           <div className="nav-brand-text">
-            <span className="nav-brand-name">Inverness</span>
-            <span className="nav-brand-sub">Cafe & Pizzeria</span>
+            <span className="nav-brand-name">{restaurant.brandName}</span>
+            <span className="nav-brand-sub">{restaurant.brandSub}</span>
           </div>
         </a>
 

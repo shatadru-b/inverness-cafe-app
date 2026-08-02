@@ -1,21 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { defaultMenuData } from '@/lib/menuData';
 import { useCart } from '@/lib/CartContext';
 import ItemCustomiseModal from '@/components/ItemCustomiseModal';
 import styles from './menu.module.css';
-
-const categoryEmojis = {
-  pizza: '🍕',
-  pasta: '🍝',
-  burgers: '🍔',
-  sides: '🥗',
-  kitchen: '🍳',
-  juices: '🧃',
-  shakes: '🥤',
-  coffee: '☕',
-};
 
 const PLACEHOLDER_IMAGE = '/images/menu/burger-classic.jpg';
 
@@ -40,17 +29,72 @@ function formatPrice(price) {
   return `£${Number(price).toFixed(2)}`;
 }
 
+/** Fixed nav + sticky tab strip height (px). */
+function getStickyOffsetPx(stickyEl) {
+  const navH =
+    parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 80;
+  const stickyH = stickyEl?.offsetHeight || 72;
+  return navH + stickyH;
+}
+
 export default function MenuSection() {
   const [activeCategory, setActiveCategory] = useState('pizza');
   const [addedItems, setAddedItems] = useState({});
   const [customiseItem, setCustomiseItem] = useState(null);
   const { addToCart } = useCart();
+  const stickyRef = useRef(null);
+  /** When set, scroll-spy must not override the tab the user just clicked. */
+  const clickLockRef = useRef(null);
+  const unlockTimerRef = useRef(null);
 
   const scrollToCategory = useCallback((cat) => {
     const el = document.getElementById(categoryAnchorId(cat));
     if (!el) return;
-    el.scrollIntoView({ behavior: 'smooth' });
+
+    // Pin highlight to the clicked tab — spy must not steal it mid-scroll
+    clickLockRef.current = cat;
     setActiveCategory(cat);
+    if (unlockTimerRef.current) clearTimeout(unlockTimerRef.current);
+
+    const offset = getStickyOffsetPx(stickyRef.current);
+    el.style.scrollMarginTop = `${offset}px`;
+
+    // Global scroll-padding (nav only) would land short of sticky+nav and leave
+    // the previous tab active. Zero it for this programmatic scroll.
+    const root = document.documentElement;
+    const prevPad = root.style.scrollPaddingTop;
+    root.style.scrollPaddingTop = '0px';
+
+    const targetY = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+
+    let released = false;
+    const release = () => {
+      if (released) return;
+      released = true;
+      root.style.scrollPaddingTop = prevPad;
+      window.removeEventListener('scrollend', release);
+      if (unlockTimerRef.current) {
+        clearTimeout(unlockTimerRef.current);
+        unlockTimerRef.current = null;
+      }
+      // Snap-correct if still a few px short (smooth scroll / subpixel)
+      const still = document.getElementById(categoryAnchorId(cat));
+      if (still) {
+        const top = still.getBoundingClientRect().top;
+        const off = getStickyOffsetPx(stickyRef.current);
+        if (top > off + 1) {
+          window.scrollTo({
+            top: Math.max(0, still.getBoundingClientRect().top + window.scrollY - off),
+            behavior: 'auto',
+          });
+        }
+      }
+      setActiveCategory(cat);
+      clickLockRef.current = null;
+    };
+    window.addEventListener('scrollend', release);
+    unlockTimerRef.current = setTimeout(release, 1000);
   }, []);
 
   useEffect(() => {
@@ -58,28 +102,26 @@ export default function MenuSection() {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('cat');
     if (cat && defaultMenuData[cat]) {
-      setActiveCategory(cat);
       const t = setTimeout(() => scrollToCategory(cat), 200);
       return () => clearTimeout(t);
     }
   }, [scrollToCategory]);
 
+  // Scroll-spy: last category whose top has crossed the sticky strip bottom
   useEffect(() => {
     let ticking = false;
 
     const updateActiveFromScroll = () => {
       ticking = false;
-      const stickyBar = document.querySelector(`.${styles.tabsSticky}`);
-      const stickyH = stickyBar ? stickyBar.getBoundingClientRect().height : 64;
-      const navH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 80;
-      const markerY = navH + stickyH + 24;
+      if (clickLockRef.current) return;
 
+      const offset = getStickyOffsetPx(stickyRef.current);
       let current = categories[0];
       for (const cat of categories) {
         const el = document.getElementById(categoryAnchorId(cat));
         if (!el) continue;
-        const top = el.getBoundingClientRect().top;
-        if (top - markerY <= 0) current = cat;
+        // Activate once the header reaches (or goes under) the sticky bottom
+        if (el.getBoundingClientRect().top <= offset) current = cat;
       }
       setActiveCategory((prev) => (prev === current ? prev : current));
     };
@@ -94,12 +136,11 @@ export default function MenuSection() {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
     updateActiveFromScroll();
-    const t = setTimeout(updateActiveFromScroll, 300);
 
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      clearTimeout(t);
+      if (unlockTimerRef.current) clearTimeout(unlockTimerRef.current);
     };
   }, []);
 
@@ -198,16 +239,17 @@ export default function MenuSection() {
           <p className="section-subtitle">Crafted with passion, served with love</p>
         </div>
 
-        <div className={styles.tabsSticky}>
+        <div className={styles.tabsSticky} ref={stickyRef}>
           <div className={styles.tabs}>
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
-                className={`menu-tab ${activeCategory === cat ? 'active' : ''}`}
+                className={`menu-tab${activeCategory === cat ? ' active' : ''}`}
+                aria-current={activeCategory === cat ? 'true' : undefined}
                 onClick={() => scrollToCategory(cat)}
               >
-                {categoryEmojis[cat] || '🍽️'} {defaultMenuData[cat].title}
+                {defaultMenuData[cat].icon || '🍽️'} {defaultMenuData[cat].title}
               </button>
             ))}
           </div>
@@ -218,7 +260,7 @@ export default function MenuSection() {
           return (
             <div key={cat} id={categoryAnchorId(cat)} className={styles.categoryBlock}>
               <div className={styles.catHeader}>
-                <span style={{ fontSize: '2.25rem' }}>{categoryEmojis[cat] || '🍽️'}</span>
+                <span style={{ fontSize: '2.25rem' }}>{data.icon || '🍽️'}</span>
                 <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '1.875rem', fontWeight: 700 }}>{data.title}</h3>
                 <div className={styles.catLine}></div>
               </div>

@@ -43,7 +43,8 @@
   box-shadow: var(--shadow-glow);
 }
 .categoryBlock {
-  scroll-margin-top: calc(var(--nav-height) + 72px);
+  /* Fallback for hash links; tab clicks set scrollMarginTop in JS */
+  scroll-margin-top: calc(var(--nav-height) + 6rem);
   padding-bottom: 3rem;
   margin-bottom: 1rem;
   border-bottom: 1px solid var(--clr-border);
@@ -230,6 +231,6 @@
   }
   .tabs::-webkit-scrollbar { display: none; }
   .categoryBlock {
-    scroll-margin-top: calc(var(--nav-height) + 88px);
+    scroll-margin-top: calc(var(--nav-height) + 5.5rem);
   }
 }

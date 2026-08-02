@@ -1,20 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { defaultMenuData, getAllMenuItems } from '@/lib/menuData';
+import { getAllMenuItems } from '@/lib/menuData';
 import styles from '../admin.module.css';
 
 export default function AdminMenuPage() {
-  const [items, setItems] = useState(getAllMenuItems());
-  const [filter, setFilter] = useState('all');
-
-  const filteredItems = filter === 'all' 
-    ? items 
-    : items.filter(i => {
-        // Simple logic since items don't have explicit category fields in flat array, 
-        // we'd normally filter by a 'category' field in Firestore
-        return true; 
-      });
+  const items = getAllMenuItems();
 
   return (
     <>
@@ -24,28 +14,6 @@ export default function AdminMenuPage() {
       </div>
 
       <div className={styles.tableContainer}>
-        <div style={{ padding: '1rem 1.5rem', borderBottom: '1px solid var(--clr-border)', display: 'flex', gap: '1rem' }}>
-          <select 
-            className="form-input" 
-            style={{ width: '200px', padding: '0.5rem 1rem' }}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="all">All Categories</option>
-            <option value="pizza">Pizza</option>
-            <option value="pasta">Pasta</option>
-            <option value="burgers">Burgers</option>
-            <option value="kitchen">Kitchen Food</option>
-            <option value="sides">Sides</option>
-          </select>
-          <input 
-            type="text" 
-            className="form-input" 
-            placeholder="Search items..." 
-            style={{ flex: 1, padding: '0.5rem 1rem' }} 
-          />
-        </div>
-
         <table className={styles.adminTable}>
           <thead>
             <tr>
@@ -57,7 +25,7 @@ export default function AdminMenuPage() {
             </tr>
           </thead>
           <tbody>
-            {filteredItems.slice(0, 10).map((item) => (
+            {items.slice(0, 10).map((item) => (
               <tr key={item.id}>
                 <td>
                   <strong>{item.name}</strong>
@@ -65,7 +33,7 @@ export default function AdminMenuPage() {
                 </td>
                 <td>£{item.price.toFixed(2)}</td>
                 <td>
-                  {item.available 
+                  {item.available
                     ? <span className={`${styles.statusBadge} ${styles['status-confirmed']}`}>Available</span>
                     : <span className={`${styles.statusBadge} ${styles['status-cancelled']}`}>Sold Out</span>
                   }
@@ -79,7 +47,7 @@ export default function AdminMenuPage() {
             ))}
           </tbody>
         </table>
-        
+
         <div style={{ padding: '1rem 1.5rem', textAlign: 'center', color: 'var(--clr-text-muted)', fontSize: '0.875rem' }}>
           Showing 10 of {items.length} items (Mock View)
         </div>

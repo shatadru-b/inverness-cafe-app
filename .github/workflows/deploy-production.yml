@@ -1,0 +1,59 @@
+# Deploy Production — manual only (workflow_dispatch)
+# Never runs on push to main. Requires "Run workflow" in GitHub Actions.
+# Target: Firebase Hosting (production project alias)
+# Does not deploy Cloud Functions
+
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy Production
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (latest LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Test
+        run: npm run test --if-present
+
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SQUARE_APPLICATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_APPLICATION_ID }}
+          NEXT_PUBLIC_SQUARE_LOCATION_ID: ${{ secrets.NEXT_PUBLIC_SQUARE_LOCATION_ID }}
+          NEXT_PUBLIC_SQUARE_ENVIRONMENT: ${{ secrets.NEXT_PUBLIC_SQUARE_ENVIRONMENT }}
+          NEXT_PUBLIC_PAYMENT_API_URL: ${{ secrets.NEXT_PUBLIC_PAYMENT_API_URL }}
+          NEXT_PUBLIC_WHATSAPP_NUMBER: ${{ secrets.NEXT_PUBLIC_WHATSAPP_NUMBER }}
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}
+
+      - name: Deploy Hosting to Firebase Production
+        run: npx firebase-tools deploy --only hosting:production --project production --non-interactive
