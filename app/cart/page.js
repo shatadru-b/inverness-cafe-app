@@ -3,11 +3,13 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useCart, formatCartItemOptions } from '@/lib/CartContext';
+import { useRestaurant } from '@/lib/RestaurantContext';
 import { openWhatsAppOrder } from '@/lib/whatsapp';
 import SquareCardPayment from '@/components/SquareCardPayment';
 import styles from './cart.module.css';
 
 export default function CartPage() {
+  const restaurant = useRestaurant();
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const [orderType, setOrderType] = useState('collection');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', address: '', notes: '' });
@@ -318,7 +320,7 @@ export default function CartPage() {
               </button>
 
               <a
-                href="tel:+441234567890"
+                href={`tel:${restaurant.phone.e164}`}
                 className="btn btn-outline"
                 style={{ width: '100%', marginTop: '0.75rem', textAlign: 'center', display: 'block' }}
               >
