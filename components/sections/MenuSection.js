@@ -15,9 +15,9 @@ function getItemImage(item) {
 const categories = Object.keys(defaultMenuData);
 
 function getTagLabel(tag) {
-  if (tag === 'popular') return '⭐ Popular';
-  if (tag === 'vegetarian') return '🌱 Vegetarian';
-  if (tag === 'spicy') return '🌶️ Spicy';
+  if (tag === 'popular') return 'Popular';
+  if (tag === 'vegetarian') return 'Vegetarian';
+  if (tag === 'spicy') return 'Spicy';
   return tag;
 }
 
@@ -29,7 +29,10 @@ function formatPrice(price) {
   return `£${Number(price).toFixed(2)}`;
 }
 
-/** Fixed nav + sticky tab strip height (px). */
+/**
+ * Fixed nav + sticky tab strip height (px).
+ * iOS Safari often reports sticky height after layout; re-measure from live DOM.
+ */
 function getStickyOffsetPx(stickyEl) {
   const navH =
     parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 80;
@@ -37,11 +40,23 @@ function getStickyOffsetPx(stickyEl) {
   return navH + stickyH;
 }
 
+/** Extra scroll so section top sits clearly past the spy line (iOS smooth-scroll undershoot). */
+const SCROLL_OVERSHOOT_PX = 24;
+/** Spy activates a little early so near-miss landings still highlight the right tab. */
+const SPY_SLACK_PX = 20;
+
+function scrollYForCategory(cat, stickyEl) {
+  const el = document.getElementById(categoryAnchorId(cat));
+  if (!el) return null;
+  const offset = getStickyOffsetPx(stickyEl);
+  // Scroll further down than exact offset so top ends up < offset after iOS settles
+  return Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset + SCROLL_OVERSHOOT_PX);
+}
+
 export default function MenuSection() {
   const [activeCategory, setActiveCategory] = useState('pizza');
-  const [addedItems, setAddedItems] = useState({});
   const [customiseItem, setCustomiseItem] = useState(null);
-  const { addToCart } = useCart();
+  const { cartItems, addToCart, updateQuantity } = useCart();
   const stickyRef = useRef(null);
   /** When set, scroll-spy must not override the tab the user just clicked. */
   const clickLockRef = useRef(null);
@@ -57,44 +72,53 @@ export default function MenuSection() {
     if (unlockTimerRef.current) clearTimeout(unlockTimerRef.current);
 
     const offset = getStickyOffsetPx(stickyRef.current);
-    el.style.scrollMarginTop = `${offset}px`;
+    el.style.scrollMarginTop = `${offset - SCROLL_OVERSHOOT_PX}px`;
 
-    // Global scroll-padding (nav only) would land short of sticky+nav and leave
-    // the previous tab active. Zero it for this programmatic scroll.
+    // Global scroll-padding (nav only) would land short of sticky+nav.
     const root = document.documentElement;
     const prevPad = root.style.scrollPaddingTop;
     root.style.scrollPaddingTop = '0px';
 
-    const targetY = el.getBoundingClientRect().top + window.scrollY - offset;
-    window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+    const targetY = scrollYForCategory(cat, stickyRef.current);
+    if (targetY != null) {
+      window.scrollTo({ top: targetY, behavior: 'smooth' });
+    }
 
     let released = false;
     const release = () => {
       if (released) return;
       released = true;
       root.style.scrollPaddingTop = prevPad;
-      window.removeEventListener('scrollend', release);
+      window.removeEventListener('scrollend', onScrollEnd);
       if (unlockTimerRef.current) {
         clearTimeout(unlockTimerRef.current);
         unlockTimerRef.current = null;
       }
-      // Snap-correct if still a few px short (smooth scroll / subpixel)
+
+      // Snap-correct if still short of spy line (iOS smooth scroll / rubber band)
+      const off = getStickyOffsetPx(stickyRef.current);
       const still = document.getElementById(categoryAnchorId(cat));
       if (still) {
         const top = still.getBoundingClientRect().top;
-        const off = getStickyOffsetPx(stickyRef.current);
-        if (top > off + 1) {
-          window.scrollTo({
-            top: Math.max(0, still.getBoundingClientRect().top + window.scrollY - off),
-            behavior: 'auto',
-          });
+        // Need top <= off - a few px so spy picks this category
+        if (top > off - 4) {
+          const y = scrollYForCategory(cat, stickyRef.current);
+          if (y != null) window.scrollTo({ top: y, behavior: 'auto' });
         }
       }
+
       setActiveCategory(cat);
-      clickLockRef.current = null;
+      // Hold lock one more frame so a late scroll event can't revert the tab
+      requestAnimationFrame(() => {
+        setActiveCategory(cat);
+        clickLockRef.current = null;
+      });
     };
-    window.addEventListener('scrollend', release);
-    unlockTimerRef.current = setTimeout(release, 1000);
+
+    const onScrollEnd = () => release();
+    window.addEventListener('scrollend', onScrollEnd);
+    // iOS often lacks scrollend — fallback; keep lock until settle + snap
+    unlockTimerRef.current = setTimeout(release, 1200);
   }, []);
 
   useEffect(() => {
@@ -107,7 +131,7 @@ export default function MenuSection() {
     }
   }, [scrollToCategory]);
 
-  // Scroll-spy: last category whose top has crossed the sticky strip bottom
+  // Scroll-spy: last category whose top has crossed (sticky bottom + slack)
   useEffect(() => {
     let ticking = false;
 
@@ -116,12 +140,13 @@ export default function MenuSection() {
       if (clickLockRef.current) return;
 
       const offset = getStickyOffsetPx(stickyRef.current);
+      const line = offset + SPY_SLACK_PX;
       let current = categories[0];
       for (const cat of categories) {
         const el = document.getElementById(categoryAnchorId(cat));
         if (!el) continue;
-        // Activate once the header reaches (or goes under) the sticky bottom
-        if (el.getBoundingClientRect().top <= offset) current = cat;
+        // Activate once header reaches sticky strip (with slack for iOS undershoot)
+        if (el.getBoundingClientRect().top <= line) current = cat;
       }
       setActiveCategory((prev) => (prev === current ? prev : current));
     };
@@ -135,20 +160,29 @@ export default function MenuSection() {
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
+    // iOS URL bar show/hide changes layout without always firing scroll reliably
+    window.visualViewport?.addEventListener('resize', onScroll);
     updateActiveFromScroll();
 
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
+      window.visualViewport?.removeEventListener('resize', onScroll);
       if (unlockTimerRef.current) clearTimeout(unlockTimerRef.current);
     };
   }, []);
 
-  const flashAdded = (key) => {
-    setAddedItems((prev) => ({ ...prev, [key]: true }));
-    setTimeout(() => {
-      setAddedItems((prev) => ({ ...prev, [key]: false }));
-    }, 1500);
+  /** Total qty of this menu item across all cart line variants. */
+  const qtyForItem = (itemId) =>
+    cartItems.filter((i) => i.id === itemId).reduce((s, i) => s + (i.quantity || 0), 0);
+
+  /** Decrement one unit from the last cart line for this menu item. */
+  const decrementItem = (itemId) => {
+    const lines = cartItems.filter((i) => i.id === itemId);
+    if (!lines.length) return;
+    const line = lines[lines.length - 1];
+    const key = line.cartKey || line.id;
+    updateQuantity(key, (line.quantity || 1) - 1);
   };
 
   const handleAddClick = (item) => {
@@ -158,12 +192,10 @@ export default function MenuSection() {
       return;
     }
     addToCart(item);
-    flashAdded(item.id);
   };
 
   const handleCustomiseConfirm = (configuredItem) => {
     addToCart(configuredItem);
-    flashAdded(configuredItem.id);
     setCustomiseItem(null);
   };
 
@@ -171,13 +203,12 @@ export default function MenuSection() {
     const imageSrc = getItemImage(item);
     const canOrder = item.available !== false && Number(item.price) > 0;
     const needsCustomise = item.productType === 'pizza' || item.productType === 'pasta';
-    const buttonLabel = addedItems[item.id]
-      ? '✓ Added'
-      : needsCustomise
-        ? item.productType === 'pizza'
-          ? 'Customise & add'
-          : 'Choose type & add'
-        : '+ Add to Cart';
+    const qty = qtyForItem(item.id);
+    const addLabel = needsCustomise
+      ? item.productType === 'pizza'
+        ? 'Customise & add'
+        : 'Choose type & add'
+      : 'Add to Cart';
 
     return (
       <article className={styles.itemCard} key={item.id}>
@@ -216,13 +247,35 @@ export default function MenuSection() {
           )}
           {canOrder && (
             <div className={styles.itemCardActions}>
-              <button
-                type="button"
-                className={`${styles.itemCardAddBtn} ${addedItems[item.id] ? styles.itemCardAddBtnAdded : ''}`}
-                onClick={() => handleAddClick(item)}
-              >
-                {buttonLabel}
-              </button>
+              {qty > 0 ? (
+                <div className={styles.qtyControl} role="group" aria-label={`Quantity for ${item.name}`}>
+                  <button
+                    type="button"
+                    className={styles.qtyBtn}
+                    onClick={() => decrementItem(item.id)}
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span className={styles.qtyValue}>{qty}</span>
+                  <button
+                    type="button"
+                    className={styles.qtyBtn}
+                    onClick={() => handleAddClick(item)}
+                    aria-label={needsCustomise ? 'Add another (customise)' : 'Increase quantity'}
+                  >
+                    +
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.itemCardAddBtn}
+                  onClick={() => handleAddClick(item)}
+                >
+                  {addLabel}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -249,7 +302,7 @@ export default function MenuSection() {
                 aria-current={activeCategory === cat ? 'true' : undefined}
                 onClick={() => scrollToCategory(cat)}
               >
-                {defaultMenuData[cat].icon || '🍽️'} {defaultMenuData[cat].title}
+                {defaultMenuData[cat].title}
               </button>
             ))}
           </div>
@@ -260,7 +313,6 @@ export default function MenuSection() {
           return (
             <div key={cat} id={categoryAnchorId(cat)} className={styles.categoryBlock}>
               <div className={styles.catHeader}>
-                <span style={{ fontSize: '2.25rem' }}>{data.icon || '🍽️'}</span>
                 <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '1.875rem', fontWeight: 700 }}>{data.title}</h3>
                 <div className={styles.catLine}></div>
               </div>

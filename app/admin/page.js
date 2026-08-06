@@ -27,7 +27,9 @@ export default function AdminLoginPage() {
   return (
     <div className={styles.loginCard}>
       <div className={styles.loginHeader}>
-        <div className="nav-brand-icon" style={{ margin: '0 auto 1rem', width: 64, height: 64, fontSize: '2rem' }}>{restaurant.logo.emoji}</div>
+        <div className="nav-brand-icon" style={{ margin: '0 auto 1rem', width: 72, height: 72 }}>
+          <img src="/icon.png" alt={restaurant.name} />
+        </div>
         <h1 style={{ fontFamily: 'var(--ff-heading)', fontSize: '1.75rem', marginBottom: '0.5rem' }}>Admin Login</h1>
         <p style={{ color: 'var(--clr-text-muted)', fontSize: '0.875rem' }}>Enter your credentials to access the dashboard</p>
       </div>

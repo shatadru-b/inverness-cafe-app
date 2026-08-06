@@ -47,7 +47,7 @@ export default function AdminOrdersPage() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>07700 900123</div>
               </td>
               <td>
-                <span style={{ fontSize: '0.875rem' }}>🚗 Delivery</span>
+                <span style={{ fontSize: '0.875rem' }}>Delivery</span>
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>2x Margherita, 1x Fries</div>
               </td>
               <td>£24.50</td>
@@ -66,7 +66,7 @@ export default function AdminOrdersPage() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>07700 900456</div>
               </td>
               <td>
-                <span style={{ fontSize: '0.875rem' }}>🏪 Collection</span>
+                <span style={{ fontSize: '0.875rem' }}>Collection</span>
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>1x Cheese Burger Combo</div>
               </td>
               <td>£12.95</td>
@@ -85,7 +85,7 @@ export default function AdminOrdersPage() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>07700 900789</div>
               </td>
               <td>
-                <span style={{ fontSize: '0.875rem' }}>🚗 Delivery</span>
+                <span style={{ fontSize: '0.875rem' }}>Delivery</span>
                 <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-muted)' }}>3x Carbonara, 2x Garlic Bread</div>
               </td>
               <td>£45.00</td>

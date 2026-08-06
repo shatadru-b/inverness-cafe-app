@@ -5,6 +5,7 @@ import { buildJsonLd, buildMetadata, getActiveRestaurant } from '@/lib/restauran
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import WhatsAppFloat from '@/components/WhatsAppFloat';
+import CartFloat from '@/components/CartFloat';
 
 const restaurant = getActiveRestaurant();
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
             <main>{children}</main>
             <Footer />
             <WhatsAppFloat />
+            <CartFloat />
           </CartProvider>
         </RestaurantProvider>
       </body>

@@ -206,9 +206,40 @@
   transform: scale(1.03);
   box-shadow: var(--shadow-glow);
 }
-.itemCardAddBtnAdded {
-  background: var(--clr-green-500);
-  color: #fff;
+/* Quantity stepper after first add */
+.qtyControl {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--clr-border-strong);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--clr-bg-card);
+  box-shadow: var(--shadow-glow);
+}
+.qtyBtn {
+  width: 40px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-amber);
+  color: var(--clr-bg-primary);
+  border: none;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+.qtyBtn:hover { filter: brightness(1.08); }
+.qtyBtn:active { filter: brightness(0.95); }
+.qtyValue {
+  min-width: 36px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--clr-text-primary);
+  padding: 0 0.25rem;
 }
 
 .subHeader { font-family: var(--ff-heading); font-size: 1.25rem; color: var(--clr-amber-400); border-bottom: 1px solid var(--clr-border); padding-bottom: 0.5rem; margin: 2rem 0 1rem; }

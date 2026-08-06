@@ -10,6 +10,10 @@ import styles from './cart.module.css';
 
 export default function CartPage() {
   const restaurant = useRestaurant();
+  const paymentsEnabled = Boolean(restaurant.payments?.enabled);
+  const orderOnlyMessage =
+    restaurant.payments?.message ||
+    'Currently we are accepting order via whatsapp or call only.';
   const { cartItems, cartCount, cartTotal, updateQuantity, removeFromCart, clearCart } = useCart();
   const [orderType, setOrderType] = useState('collection');
   const [customerInfo, setCustomerInfo] = useState({ name: '', phone: '', address: '', notes: '' });
@@ -71,12 +75,11 @@ export default function CartPage() {
       <>
         <div className="page-header">
           <div className="container">
-            <h1>{paid ? '🎉 Payment Successful!' : '🎉 Order Sent!'}</h1>
+            <h1>{paid ? 'Payment Successful!' : 'Order Sent!'}</h1>
           </div>
         </div>
         <section className="section-padding">
           <div className="container" style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>✅</div>
             <h2 style={{ fontFamily: 'var(--ff-heading)', fontSize: '2rem', marginBottom: '1rem' }}>
               Thank You, {customerInfo.name}!
             </h2>
@@ -92,10 +95,10 @@ export default function CartPage() {
             )}
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/#menu" className="btn btn-primary">
-                🍕 Order More
+                Order More
               </Link>
               <Link href="/" className="btn btn-outline">
-                🏠 Back to Home
+                Back to Home
               </Link>
             </div>
           </div>
@@ -117,7 +120,6 @@ export default function CartPage() {
         </div>
         <section className="section-padding">
           <div className="container" style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto' }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>🛒</div>
             <h2 style={{ fontFamily: 'var(--ff-heading)', fontSize: '2rem', marginBottom: '1rem' }}>
               Your cart is empty
             </h2>
@@ -125,7 +127,7 @@ export default function CartPage() {
               Browse our menu and add some delicious items!
             </p>
             <Link href="/#menu" className="btn btn-primary">
-              🍕 View Menu
+              View Menu
             </Link>
           </div>
         </section>
@@ -202,13 +204,13 @@ export default function CartPage() {
                   className={`${styles.toggleBtn} ${orderType === 'collection' ? styles.toggleActive : ''}`}
                   onClick={() => setOrderType('collection')}
                 >
-                  🏪 Collection
+                  Collection
                 </button>
                 <button
                   className={`${styles.toggleBtn} ${orderType === 'delivery' ? styles.toggleActive : ''}`}
                   onClick={() => setOrderType('delivery')}
                 >
-                  🚗 Delivery
+                  Delivery
                 </button>
               </div>
 
@@ -290,33 +292,48 @@ export default function CartPage() {
                 </div>
               </div>
 
-              {payError && (
+              <div className={styles.orderNotice} role="status">
+                <strong>Coming soon — online card payment</strong>
+                <p>{orderOnlyMessage}</p>
+              </div>
+
+              {paymentsEnabled && payError && (
                 <p style={{ color: 'var(--clr-red-500)', fontSize: '0.9rem', marginBottom: '0.75rem' }}>
                   {payError}
                 </p>
               )}
 
-              <SquareCardPayment
-                amount={cartTotal}
-                orderPayload={orderPayload}
-                disabled={!customerInfo.name.trim() || !customerInfo.phone.trim()}
-                onSuccess={handlePaymentSuccess}
-                onError={(msg) => {
-                  setPayError(msg);
-                  if (!validate()) return;
-                }}
-              />
-
-              <div style={{ margin: '1.25rem 0 0.75rem', textAlign: 'center', color: 'var(--clr-text-muted)', fontSize: '0.85rem' }}>
-                — or —
-              </div>
+              {paymentsEnabled ? (
+                <>
+                  <SquareCardPayment
+                    amount={cartTotal}
+                    orderPayload={orderPayload}
+                    disabled={!customerInfo.name.trim() || !customerInfo.phone.trim()}
+                    onSuccess={handlePaymentSuccess}
+                    onError={(msg) => {
+                      setPayError(msg);
+                      if (!validate()) return;
+                    }}
+                  />
+                  <div
+                    style={{
+                      margin: '1.25rem 0 0.75rem',
+                      textAlign: 'center',
+                      color: 'var(--clr-text-muted)',
+                      fontSize: '0.85rem',
+                    }}
+                  >
+                    — or —
+                  </div>
+                </>
+              ) : null}
 
               <button
-                className="btn btn-outline"
+                className="btn btn-primary"
                 style={{ width: '100%', padding: '1rem', fontSize: '1.05rem' }}
                 onClick={handleWhatsAppOrder}
               >
-                💬 Order via WhatsApp
+                Order via WhatsApp
               </button>
 
               <a
@@ -324,7 +341,7 @@ export default function CartPage() {
                 className="btn btn-outline"
                 style={{ width: '100%', marginTop: '0.75rem', textAlign: 'center', display: 'block' }}
               >
-                📞 Call to Order
+                Call to Order
               </a>
             </div>
           </div>

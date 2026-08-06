@@ -18,7 +18,9 @@ export default function AdminLayout({ children }) {
     <div className={styles.adminLayout}>
       <aside className={styles.adminSidebar}>
         <div className={styles.sidebarHeader}>
-          <div className="nav-brand-icon" style={{ width: 40, height: 40, fontSize: '1.25rem' }}>{restaurant.logo.emoji}</div>
+          <div className="nav-brand-icon" style={{ width: 40, height: 40 }}>
+            <img src="/icon.png" alt="" />
+          </div>
           <div>
             <div style={{ fontFamily: 'var(--ff-heading)', fontWeight: 700, lineHeight: 1.1 }}>{restaurant.brandName}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--clr-amber-400)' }}>Admin Panel</div>
@@ -27,16 +29,16 @@ export default function AdminLayout({ children }) {
         
         <nav className={styles.sidebarNav}>
           <Link href="/admin/dashboard" className={`${styles.navItem} ${pathname === '/admin/dashboard' ? styles.active : ''}`}>
-            📊 Dashboard
+            Dashboard
           </Link>
           <Link href="/admin/orders" className={`${styles.navItem} ${pathname === '/admin/orders' ? styles.active : ''}`}>
-            🛒 Orders
+            Orders
           </Link>
           <Link href="/admin/reservations" className={`${styles.navItem} ${pathname === '/admin/reservations' ? styles.active : ''}`}>
-            📅 Reservations
+            Reservations
           </Link>
           <Link href="/admin/menu" className={`${styles.navItem} ${pathname === '/admin/menu' ? styles.active : ''}`}>
-            🍔 Menu Manager
+            Menu Manager
           </Link>
         </nav>
 

@@ -38,7 +38,7 @@ export default function AdminMenuPage() {
                     : <span className={`${styles.statusBadge} ${styles['status-cancelled']}`}>Sold Out</span>
                   }
                 </td>
-                <td>{item.featured ? '⭐' : '-'}</td>
+                <td>{item.featured ? 'Yes' : '-'}</td>
                 <td style={{ textAlign: 'right' }}>
                   <button className="btn btn-outline btn-sm" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem', marginRight: '0.5rem' }}>Edit</button>
                   <button className="btn btn-outline btn-sm" style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem', color: 'var(--clr-red-500)', borderColor: 'rgba(239,68,68,0.2)' }}>Delete</button>

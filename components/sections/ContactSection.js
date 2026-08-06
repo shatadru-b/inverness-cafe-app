@@ -6,13 +6,16 @@ import styles from './contact.module.css';
 
 export default function ContactSection() {
   const restaurant = useRestaurant();
-  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', _gotcha: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setErrors(prev => ({ ...prev, [e.target.name]: '' }));
+    setSubmitError('');
   };
 
   const validate = () => {
@@ -25,11 +28,67 @@ export default function ContactSection() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log('Contact form submitted:', formData);
-    setSubmitted(true);
+    // Honeypot — bots only
+    if (formData._gotcha) {
+      setSubmitted(true);
+      return;
+    }
+
+    setSending(true);
+    setSubmitError('');
+
+    const to = restaurant.email; // invernesscafe@dinego.co.uk
+    const subject = formData.subject.trim()
+      ? `Contact: ${formData.subject.trim()}`
+      : `Contact form — ${formData.name.trim()}`;
+
+    try {
+      const res = await fetch(
+        `https://formsubmit.co/ajax/${encodeURIComponent(to)}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            subject: formData.subject.trim() || 'Website enquiry',
+            message: formData.message.trim(),
+            _replyto: formData.email.trim(),
+            _subject: subject,
+            _template: 'table',
+            _captcha: 'false',
+          }),
+        }
+      );
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === 'false' || data.success === false) {
+        const msg = data.message || data.error || 'Failed to send message';
+        // First-time FormSubmit activation is emailed to the restaurant inbox
+        if (/activat/i.test(msg)) {
+          throw new Error(
+            'Please check the restaurant inbox once and confirm FormSubmit activation, then try again.'
+          );
+        }
+        throw new Error(msg);
+      }
+
+      setSubmitted(true);
+      setFormData({ name: '', email: '', subject: '', message: '', _gotcha: '' });
+    } catch (err) {
+      setSubmitError(
+        err?.message ||
+          `Could not send message. Email us directly at ${restaurant.email}.`
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -51,7 +110,6 @@ export default function ContactSection() {
 
               <div className={styles.infoBlocks}>
                 <div className={styles.infoBlock}>
-                  <div className={styles.infoIcon}>📍</div>
                   <div>
                     <h4 className={styles.infoTitle}>Location</h4>
                     <p className={styles.infoText}>
@@ -76,7 +134,6 @@ export default function ContactSection() {
                 </div>
 
                 <div className={styles.infoBlock}>
-                  <div className={styles.infoIcon}>📞</div>
                   <div>
                     <h4 className={styles.infoTitle}>Phone & WhatsApp</h4>
                     <p className={styles.infoText}>
@@ -86,7 +143,6 @@ export default function ContactSection() {
                 </div>
 
                 <div className={styles.infoBlock}>
-                  <div className={styles.infoIcon}>✉️</div>
                   <div>
                     <h4 className={styles.infoTitle}>Email</h4>
                     <p className={styles.infoText}>
@@ -96,7 +152,6 @@ export default function ContactSection() {
                 </div>
 
                 <div className={styles.infoBlock}>
-                  <div className={styles.infoIcon}>🕐</div>
                   <div>
                     <h4 className={styles.infoTitle}>Hours</h4>
                     <p className={styles.infoText}>
@@ -115,7 +170,7 @@ export default function ContactSection() {
             <div className={styles.formContainer}>
               {submitted ? (
                 <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-                  <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>✅</div>
+
                   <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '1.5rem', marginBottom: '1rem' }}>Message Sent!</h3>
                   <p style={{ color: 'var(--clr-text-secondary)', marginBottom: '2rem' }}>
                     Thanks for reaching out, {formData.name}. We&apos;ll get back to you as soon as possible.
@@ -126,30 +181,55 @@ export default function ContactSection() {
                 <form onSubmit={handleSubmit}>
                   <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Send a Message</h3>
 
+                  {/* Honeypot — hidden from real users */}
+                  <input
+                    type="text"
+                    name="_gotcha"
+                    value={formData._gotcha}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    style={{ position: 'absolute', left: '-9999px', height: 0, width: 0, opacity: 0 }}
+                  />
+
                   <div className="form-group">
                     <label className="form-label">Name *</label>
-                    <input type="text" name="name" className="form-input" value={formData.name} onChange={handleChange} placeholder="Your name" />
+                    <input type="text" name="name" className="form-input" value={formData.name} onChange={handleChange} placeholder="Your name" disabled={sending} />
                     {errors.name && <span className={styles.error}>{errors.name}</span>}
                   </div>
 
                   <div className="form-group">
                     <label className="form-label">Email *</label>
-                    <input type="email" name="email" className="form-input" value={formData.email} onChange={handleChange} placeholder="your@email.com" />
+                    <input type="email" name="email" className="form-input" value={formData.email} onChange={handleChange} placeholder="your@email.com" disabled={sending} />
                     {errors.email && <span className={styles.error}>{errors.email}</span>}
                   </div>
 
                   <div className="form-group">
                     <label className="form-label">Subject</label>
-                    <input type="text" name="subject" className="form-input" value={formData.subject} onChange={handleChange} placeholder="What is this regarding?" />
+                    <input type="text" name="subject" className="form-input" value={formData.subject} onChange={handleChange} placeholder="What is this regarding?" disabled={sending} />
                   </div>
 
                   <div className="form-group">
                     <label className="form-label">Message *</label>
-                    <textarea name="message" className="form-input" value={formData.message} onChange={handleChange} placeholder="How can we help you?" style={{ minHeight: '150px' }} />
+                    <textarea name="message" className="form-input" value={formData.message} onChange={handleChange} placeholder="How can we help you?" style={{ minHeight: '150px' }} disabled={sending} />
                     {errors.message && <span className={styles.error}>{errors.message}</span>}
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem' }}>Send Message</button>
+                  {submitError && (
+                    <p className={styles.error} style={{ marginBottom: '1rem' }} role="alert">
+                      {submitError}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ width: '100%', padding: '1rem' }}
+                    disabled={sending}
+                  >
+                    {sending ? 'Sending…' : 'Send Message'}
+                  </button>
                 </form>
               )}
             </div>

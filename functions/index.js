@@ -66,6 +66,16 @@ exports.createPayment = onRequest(
       return;
     }
 
+    // Card checkout is disabled until online payments go live
+    if (process.env.PAYMENTS_ENABLED !== 'true') {
+      res.status(503).json({
+        success: false,
+        error:
+          'Currently we are accepting order via whatsapp or call only. Online card payment is coming soon.',
+      });
+      return;
+    }
+
     try {
       const { sourceId, amount, currency = 'GBP', order, idempotencyKey } = req.body || {};
 

@@ -22,6 +22,30 @@
 .orderSummary { margin: 1.5rem 0; padding: 1rem 0; }
 .summaryRow { display: flex; justify-content: space-between; padding: 0.5rem 0; color: var(--clr-text-secondary); }
 
+.orderNotice {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--clr-border-strong);
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--clr-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+.orderNotice strong {
+  display: block;
+  color: var(--clr-amber-400);
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.orderNotice p {
+  margin: 0;
+  color: var(--clr-text-primary);
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .cartGrid { grid-template-columns: 1fr; }
   .checkoutPanel { position: static; }

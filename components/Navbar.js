@@ -121,11 +121,11 @@ export default function Navbar() {
             goToSection('home');
           }}
         >
-          <div className="nav-brand-icon">{restaurant.logo.emoji}</div>
-          <div className="nav-brand-text">
-            <span className="nav-brand-name">{restaurant.brandName}</span>
-            <span className="nav-brand-sub">{restaurant.brandSub}</span>
-          </div>
+          <img
+            src={restaurant.logo.image}
+            alt={restaurant.name}
+            className="nav-brand-logo"
+          />
         </a>
 
         <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
@@ -143,11 +143,11 @@ export default function Navbar() {
             </a>
           ))}
           <Link href="/cart" className={`nav-cart-btn ${pathname === '/cart' || pathname === '/cart/' ? 'active' : ''}`} onClick={closeMenu}>
-            🛒 Cart
+            Cart
             {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
           </Link>
           <Link href="/cart" className="nav-cta" onClick={closeMenu}>
-            📞 Order Now
+            Order Now
           </Link>
         </div>
 

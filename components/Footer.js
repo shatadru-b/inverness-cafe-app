@@ -35,19 +35,19 @@ export default function Footer() {
         <div className="footer-grid">
           <div>
             <a href="/#home" className="nav-brand" onClick={(e) => goToSection('home', e)}>
-              <div className="nav-brand-icon">{restaurant.logo.emoji}</div>
-              <div className="nav-brand-text">
-                <span className="nav-brand-name">{restaurant.brandName}</span>
-                <span className="nav-brand-sub">{restaurant.brandSub}</span>
-              </div>
+              <img
+                src={restaurant.logo.image}
+                alt={restaurant.name}
+                className="nav-brand-logo"
+              />
             </a>
             <p className="footer-brand-text">
               {restaurant.content.footerBlurb}
             </p>
             <div className="footer-social">
-              <a href={restaurant.social.facebook} aria-label="Facebook">📘</a>
-              <a href={restaurant.social.instagram} aria-label="Instagram">📷</a>
-              <a href={restaurant.social.tripadvisor} aria-label="TripAdvisor">🗺️</a>
+              <a href={restaurant.social.facebook} aria-label="Facebook">FB</a>
+              <a href={restaurant.social.instagram} aria-label="Instagram">IG</a>
+              <a href={restaurant.social.tripadvisor} aria-label="TripAdvisor">TA</a>
             </div>
           </div>
 

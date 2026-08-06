@@ -1,0 +1,70 @@
+.page {
+  min-height: calc(100vh - var(--nav-height) - 8rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.25rem;
+  background:
+    radial-gradient(ellipse at top, rgba(245, 158, 11, 0.12) 0%, transparent 55%),
+    var(--clr-bg-primary);
+}
+
+.card {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+  background: var(--gradient-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-2xl);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: var(--radius-full);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--clr-border-strong);
+  color: var(--clr-amber-400);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-family: var(--ff-heading);
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--clr-text-primary);
+}
+
+.lead {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--clr-amber-400);
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.sub {
+  color: var(--clr-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  font-size: 0.98rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.actions :global(.btn) {
+  width: 100%;
+  justify-content: center;
+  padding: 0.95rem 1rem;
+}

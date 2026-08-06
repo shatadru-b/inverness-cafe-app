@@ -53,15 +53,14 @@ export default function ReserveSection() {
 
         {submitted ? (
           <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>
-            <div style={{ fontSize: '5rem', marginBottom: '1.5rem' }}>📅</div>
             <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '2rem', marginBottom: '1rem' }}>
               Thank You, {formData.name}!
             </h3>
             <div className={styles.confirmCard}>
-              <div className={styles.confirmRow}><span>📅 Date</span><strong>{formData.date}</strong></div>
-              <div className={styles.confirmRow}><span>🕐 Time</span><strong>{formData.time}</strong></div>
-              <div className={styles.confirmRow}><span>👥 Party Size</span><strong>{formData.partySize} guests</strong></div>
-              <div className={styles.confirmRow}><span>📞 Phone</span><strong>{formData.phone}</strong></div>
+              <div className={styles.confirmRow}><span>Date</span><strong>{formData.date}</strong></div>
+              <div className={styles.confirmRow}><span>Time</span><strong>{formData.time}</strong></div>
+              <div className={styles.confirmRow}><span>Party Size</span><strong>{formData.partySize} guests</strong></div>
+              <div className={styles.confirmRow}><span>Phone</span><strong>{formData.phone}</strong></div>
             </div>
             <p style={{ color: 'var(--clr-text-muted)', marginTop: '1.5rem', marginBottom: '2rem' }}>
               We&apos;ll confirm your reservation shortly. If you need to make changes, please call us.
@@ -123,26 +122,23 @@ export default function ReserveSection() {
               </div>
 
               <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem' }}>
-                📅 Confirm Reservation
+                Confirm Reservation
               </button>
             </form>
 
             <div className={styles.reserveInfo}>
               <div className={styles.infoCard}>
-                <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>🕐</span>
                 <h3>Opening Hours</h3>
                 {restaurant.hours.map((h) => (
                   <p key={h.label}>{h.label}: {h.opens} – {h.closes}</p>
                 ))}
               </div>
               <div className={styles.infoCard}>
-                <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>📞</span>
                 <h3>Prefer to Call?</h3>
                 <p>Ring us directly on</p>
                 <a href={`tel:${restaurant.phone.e164}`} style={{ color: 'var(--clr-amber-400)', fontWeight: 600, fontSize: '1.125rem' }}>{restaurant.phone.display}</a>
               </div>
               <div className={styles.infoCard}>
-                <span style={{ fontSize: '2rem', marginBottom: '0.75rem', display: 'block' }}>👨‍👩‍👧‍👦</span>
                 <h3>Large Groups?</h3>
                 <p>For parties of 10+, please call us to discuss arrangements and special menus.</p>
               </div>

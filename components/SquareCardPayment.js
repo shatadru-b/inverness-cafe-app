@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { getSquarePublicConfig } from '@/lib/squareConfig';
+import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './SquareCardPayment.module.css';
 
 function loadSquareSdk(sdkUrl) {
@@ -34,6 +35,8 @@ export default function SquareCardPayment({
   onSuccess,
   onError,
 }) {
+  const restaurant = useRestaurant();
+  const paymentsEnabled = Boolean(restaurant.payments?.enabled);
   const config = getSquarePublicConfig();
   const cardRef = useRef(null);
   const cardInstance = useRef(null);
@@ -43,6 +46,7 @@ export default function SquareCardPayment({
   const [initError, setInitError] = useState('');
 
   useEffect(() => {
+    if (!paymentsEnabled) return undefined;
     let cancelled = false;
 
     async function init() {
@@ -110,7 +114,7 @@ export default function SquareCardPayment({
   }, [config.applicationId, config.locationId, config.sdkUrl]);
 
   const handlePay = async () => {
-    if (!cardInstance.current || busy || disabled) return;
+    if (!paymentsEnabled || !cardInstance.current || busy || disabled) return;
     setBusy(true);
     setStatus('Processing payment…');
     onError?.('');
@@ -152,6 +156,9 @@ export default function SquareCardPayment({
       setBusy(false);
     }
   };
+
+  // Online payments disabled (coming soon)
+  if (!paymentsEnabled) return null;
 
   if (!config.isConfigured || initError) {
     return (
