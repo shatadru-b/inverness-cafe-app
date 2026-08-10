@@ -1,5 +1,8 @@
 # TODO: After Firebase Blaze upgrade — live Google reviews
 
+**Deploy order reminder (always):** see `DEPLOY.md`  
+1. Update `development` → 2. Merge to `main` → 3. Deploy staging + production → 4. Functions (this file) when Blaze is on.
+
 **Why this exists:** Functions deploy failed because project `inverness-cafe-app` was on the free Spark plan. Artifact Registry / Cloud Build require **Blaze (pay-as-you-go)**. Hosting was deployed without the `googleReviews` function.
 
 **Do not forget:** the Places API key lives only in local `functions/.env` (gitignored). It is **not** live on Google Cloud until functions deploy succeeds.
