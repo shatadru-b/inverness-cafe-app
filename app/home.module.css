@@ -76,7 +76,11 @@
 .featuredPrice { font-family: var(--ff-heading); font-size: 1.25rem; font-weight: 700; color: var(--clr-amber-400); }
 
 /* Testimonials */
-.testimonialsGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.testimonialsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
 .testimonialCard { background: var(--gradient-card); border: 1px solid var(--clr-border); border-radius: var(--radius-xl); padding: 2rem; position: relative; transition: all var(--transition-base); }
 .testimonialCard:hover { transform: translateY(-4px); border-color: var(--clr-border-strong); box-shadow: var(--shadow-lg); }
 

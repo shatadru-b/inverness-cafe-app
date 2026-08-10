@@ -1,27 +1,42 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import styles from '@/app/home.module.css';
 import { useRestaurant } from '@/lib/RestaurantContext';
+import { RESERVATIONS_ENABLED } from '@/lib/features';
+import GoogleReviews from '@/components/GoogleReviews';
 
-export default function AboutSection() {
+export default function AboutSection({ hideIntroHeader = false } = {}) {
   const restaurant = useRestaurant();
-  const { about, homeAbout, featured, testimonials, infoCards } = restaurant.content;
+  const router = useRouter();
+  const { about, homeAbout, featured, infoCards } = restaurant.content;
   const { images } = restaurant;
 
-  const scrollTo = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  const goTo = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      return;
+    }
+    if (id === 'menu') router.push('/menu/');
+    else if (id === 'reserve') router.push(RESERVATIONS_ENABLED ? '/reserve/' : '/contact/');
+    else if (id === 'contact') router.push('/contact/');
+    else router.push(`/#${id}`);
   };
 
   return (
     <section id="about" className="site-section">
       <div className="section-padding" style={{ background: 'var(--clr-bg-primary)' }}>
         <div className="container">
-          <div className="section-header">
-            <div className="section-tag">About Us</div>
-            <h2 className="section-title">Our Story</h2>
-            <p className="section-subtitle">{about.subtitle}</p>
-          </div>
+          {!hideIntroHeader && (
+            <div className="section-header">
+              <div className="section-tag">About Us</div>
+              <h2 className="section-title">Our Story</h2>
+              <p className="section-subtitle">{about.subtitle}</p>
+            </div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '4rem', alignItems: 'center' }}>
             <div>
@@ -54,14 +69,14 @@ export default function AboutSection() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
               <div style={{ position: 'relative', height: '400px', borderRadius: 'var(--radius-2xl)', overflow: 'hidden' }}>
-                <Image src={images.about} alt="Restaurant Interior" fill style={{ objectFit: 'cover' }} />
+                <Image src={images.about} alt={`${restaurant.name} interior on Academy Street, Inverness`} fill style={{ objectFit: 'cover' }} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                 <div style={{ position: 'relative', height: '200px', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-                  <Image src={images.pizzaHero} alt="Wood-fired Pizza" fill style={{ objectFit: 'cover' }} />
+                  <Image src={images.pizzaHero} alt={`Wood-fired pizza at ${restaurant.name}`} fill style={{ objectFit: 'cover' }} />
                 </div>
                 <div style={{ position: 'relative', height: '200px', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
-                  <Image src={images.pastaHero} alt="Fresh Pasta" fill style={{ objectFit: 'cover' }} />
+                  <Image src={images.pastaHero} alt={`Fresh pasta at ${restaurant.name}`} fill style={{ objectFit: 'cover' }} />
                 </div>
               </div>
             </div>
@@ -74,7 +89,7 @@ export default function AboutSection() {
         <div className="container">
           <div className={styles.aboutGrid}>
             <div className={styles.aboutImage}>
-              <Image src={images.about} alt="Restaurant interior" width={640} height={500} style={{ objectFit: 'cover', width: '100%', height: '500px', borderRadius: 'var(--radius-2xl)' }} />
+              <Image src={images.about} alt={`${restaurant.name} dining room, Academy Street Inverness`} width={640} height={500} style={{ objectFit: 'cover', width: '100%', height: '500px', borderRadius: 'var(--radius-2xl)' }} />
               <div className={styles.aboutBadge}>
                 <div>
                   <strong>{homeAbout.badgeTitle}</strong>
@@ -136,46 +151,31 @@ export default function AboutSection() {
             {featured.map((item) => (
               <div key={item.name} className={styles.featuredCard}>
                 <div className={styles.featuredImg}>
-                  <Image src={images[item.imgKey]} alt={item.name} width={400} height={250} style={{ objectFit: 'cover', width: '100%', height: '220px' }} />
+                  <Image src={images[item.imgKey]} alt={`${item.name} at ${restaurant.name}`} width={400} height={250} style={{ objectFit: 'cover', width: '100%', height: '220px' }} />
                 </div>
                 <div className={styles.featuredContent}>
                   <h3>{item.name}</h3>
                   <p>{item.desc}</p>
                   <div className={styles.featuredFooter}>
                     <span className={styles.featuredPrice}>{item.price}</span>
-                    <button type="button" className="btn btn-sm btn-primary" onClick={() => scrollTo('menu')}>View Menu</button>
+                    <button type="button" className="btn btn-sm btn-primary" onClick={() => goTo('menu')}>View Menu</button>
                   </div>
                 </div>
               </div>
             ))}
           </div>
+          <p style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+            <Link href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>View our pizza menu</Link>
+            {' · '}
+            <Link href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>Fresh pasta</Link>
+            {' · '}
+            <Link href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway in Inverness</Link>
+          </p>
         </div>
       </div>
 
-      {/* Testimonials (was under home) */}
-      <div className="section-padding" style={{ background: 'var(--clr-bg-secondary)' }}>
-        <div className="container">
-          <div className="section-header">
-            <div className="section-tag">What People Say</div>
-            <h2 className="section-title">Loved by Locals & Visitors Alike</h2>
-          </div>
-          <div className={styles.testimonialsGrid}>
-            {testimonials.map((t) => (
-              <div key={t.name} className={styles.testimonialCard}>
-                <div style={{ position: 'absolute', top: '1rem', right: '1.5rem', fontSize: '4rem', fontFamily: 'var(--ff-heading)', color: 'var(--clr-amber-800)', opacity: 0.3, lineHeight: 1 }}>&quot;</div>
-                <p style={{ color: 'var(--clr-text-secondary)', lineHeight: 1.8, fontStyle: 'italic', marginBottom: '1.5rem' }}>&quot;{t.text}&quot;</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--gradient-amber)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '1.125rem', color: 'var(--clr-bg-primary)' }}>{t.avatar}</div>
-                  <div>
-                    <strong>{t.name}</strong>
-                    <p style={{ fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Live Google reviews (5★ first → rating → date). See components/GoogleReviews.js */}
+      <GoogleReviews />
 
       {/* Info cards (was under home) */}
       <div className="section-padding" style={{ background: 'var(--clr-bg-primary)' }}>
@@ -201,8 +201,12 @@ export default function AboutSection() {
             Order online, book a table, or pop in and visit us. We can&apos;t wait to serve you!
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => scrollTo('menu')}>Order Online</button>
-            <button type="button" className="btn btn-outline" onClick={() => scrollTo('reserve')}>Book a Table</button>
+            <button type="button" className="btn btn-primary" onClick={() => goTo('menu')}>Order Online</button>
+            {RESERVATIONS_ENABLED ? (
+              <button type="button" className="btn btn-outline" onClick={() => goTo('reserve')}>Book a Table</button>
+            ) : (
+              <button type="button" className="btn btn-outline" onClick={() => goTo('contact')}>Contact Us</button>
+            )}
           </div>
         </div>
       </div>
@@ -216,8 +220,12 @@ export default function AboutSection() {
             {about.ctaBody}
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => scrollTo('reserve')}>Book a Table</button>
-            <button type="button" className="btn btn-outline" onClick={() => scrollTo('menu')}>Explore Menu</button>
+            {RESERVATIONS_ENABLED ? (
+              <button type="button" className="btn btn-primary" onClick={() => goTo('reserve')}>Book a Table</button>
+            ) : (
+              <button type="button" className="btn btn-primary" onClick={() => goTo('contact')}>Contact Us</button>
+            )}
+            <button type="button" className="btn btn-outline" onClick={() => goTo('menu')}>Explore Menu</button>
           </div>
         </div>
       </div>

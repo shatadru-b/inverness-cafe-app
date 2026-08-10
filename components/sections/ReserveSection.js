@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './reserve.module.css';
 
-export default function ReserveSection() {
+export default function ReserveSection({ hideHeader = false } = {}) {
   const restaurant = useRestaurant();
   const [formData, setFormData] = useState({
     name: '', phone: '', email: '', date: '', time: '', partySize: '2', specialRequests: ''
@@ -45,11 +45,13 @@ export default function ReserveSection() {
   return (
     <section id="reserve" className="site-section section-padding" style={{ background: 'var(--clr-bg-secondary)' }}>
       <div className="container">
-        <div className="section-header">
-          <div className="section-tag">Reservations</div>
-          <h2 className="section-title">Book a Table</h2>
-          <p className="section-subtitle">Reserve your spot for a wonderful dining experience</p>
-        </div>
+        {!hideHeader && (
+          <div className="section-header">
+            <div className="section-tag">Reservations</div>
+            <h2 className="section-title">Book a Table</h2>
+            <p className="section-subtitle">Reserve your spot for a wonderful dining experience at our Academy Street restaurant</p>
+          </div>
+        )}
 
         {submitted ? (
           <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto' }}>

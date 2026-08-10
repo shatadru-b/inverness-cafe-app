@@ -1,7 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useRestaurant } from '@/lib/RestaurantContext';
+import { RESERVATIONS_ENABLED } from '@/lib/features';
 
 export default function Footer() {
   const pathname = usePathname();
@@ -14,8 +16,24 @@ export default function Footer() {
   }
 
   const goToSection = (id, e, options = {}) => {
+    const { cat, href } = options;
+    // Prefer real SEO routes when leaving home; on home, smooth-scroll
+    if (href && !isHome) {
+      // let Link/default navigation work
+      return;
+    }
+    if (href && isHome && (id === 'menu' || id === 'reserve' || id === 'about' || id === 'contact' || id === 'home')) {
+      e.preventDefault();
+      const targetId = cat ? `menu-${cat}` : id;
+      document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth' });
+      window.history.replaceState(
+        null,
+        '',
+        cat ? `/?cat=${cat}#menu` : id === 'home' ? '/' : `/#${id}`
+      );
+      return;
+    }
     e.preventDefault();
-    const { cat } = options;
     const targetId = cat ? `menu-${cat}` : id;
     if (!isHome) {
       router.push(cat ? `/?cat=${cat}#menu` : `/#${id}`);
@@ -34,17 +52,18 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <a href="/#home" className="nav-brand" onClick={(e) => goToSection('home', e)}>
+            <Link href="/" className="nav-brand" onClick={(e) => goToSection('home', e, { href: '/' })}>
               <img
                 src={restaurant.logo.image}
                 alt={restaurant.name}
                 className="nav-brand-logo"
               />
-            </a>
+            </Link>
             <p className="footer-brand-text">
               {restaurant.content.footerBlurb}
             </p>
             <div className="footer-social">
+              {/* Social URLs are placeholders (#) — keep for layout, not for Schema sameAs */}
               <a href={restaurant.social.facebook} aria-label="Facebook">FB</a>
               <a href={restaurant.social.instagram} aria-label="Instagram">IG</a>
               <a href={restaurant.social.tripadvisor} aria-label="TripAdvisor">TA</a>
@@ -54,25 +73,40 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Quick Links</h4>
             <ul>
-              <li><a href="/#home" onClick={(e) => goToSection('home', e)}>Home</a></li>
-              <li><a href="/#menu" onClick={(e) => goToSection('menu', e)}>Our Menu</a></li>
-              <li><a href="/#reserve" onClick={(e) => goToSection('reserve', e)}>Reservations</a></li>
-              <li><a href="/#about" onClick={(e) => goToSection('about', e)}>About Us</a></li>
-              <li><a href="/#contact" onClick={(e) => goToSection('contact', e)}>Contact</a></li>
+              <li>
+                <Link href="/" onClick={(e) => goToSection('home', e, { href: '/' })}>Home</Link>
+              </li>
+              <li>
+                <Link href="/menu/" onClick={(e) => goToSection('menu', e, { href: '/menu/' })}>Our Menu</Link>
+              </li>
+              {RESERVATIONS_ENABLED ? (
+                <li>
+                  <Link href="/reserve/" onClick={(e) => goToSection('reserve', e, { href: '/reserve/' })}>Reservations</Link>
+                </li>
+              ) : null}
+              <li>
+                <Link href="/about/" onClick={(e) => goToSection('about', e, { href: '/about/' })}>About Us</Link>
+              </li>
+              <li>
+                <Link href="/contact/" onClick={(e) => goToSection('contact', e, { href: '/contact/' })}>Contact</Link>
+              </li>
+              <li>
+                <Link href="/takeaway/">Takeaway</Link>
+              </li>
             </ul>
           </div>
 
           <div className="footer-column">
             <h4>Our Menu</h4>
             <ul>
-              <li><a href="/?cat=pizza#menu" onClick={(e) => goToSection('menu', e, { cat: 'pizza' })}>Pizza</a></li>
-              <li><a href="/?cat=pasta#menu" onClick={(e) => goToSection('menu', e, { cat: 'pasta' })}>Pasta</a></li>
-              <li><a href="/?cat=burgers#menu" onClick={(e) => goToSection('menu', e, { cat: 'burgers' })}>Burgers</a></li>
-              <li><a href="/?cat=kitchen#menu" onClick={(e) => goToSection('menu', e, { cat: 'kitchen' })}>Kitchen Food</a></li>
-              <li><a href="/?cat=sides#menu" onClick={(e) => goToSection('menu', e, { cat: 'sides' })}>Side Plates</a></li>
-              <li><a href="/?cat=juices#menu" onClick={(e) => goToSection('menu', e, { cat: 'juices' })}>Juices</a></li>
-              <li><a href="/?cat=shakes#menu" onClick={(e) => goToSection('menu', e, { cat: 'shakes' })}>Shakes</a></li>
-              <li><a href="/?cat=coffee#menu" onClick={(e) => goToSection('menu', e, { cat: 'coffee' })}>Coffee</a></li>
+              <li><Link href="/menu/pizza/">Pizza</Link></li>
+              <li><Link href="/menu/pasta/">Pasta</Link></li>
+              <li><Link href="/menu/burgers/">Burgers</Link></li>
+              <li><Link href="/menu/?cat=kitchen">Kitchen Food</Link></li>
+              <li><Link href="/menu/?cat=sides">Side Plates</Link></li>
+              <li><Link href="/menu/?cat=juices">Juices</Link></li>
+              <li><Link href="/menu/?cat=shakes">Shakes</Link></li>
+              <li><Link href="/menu/?cat=coffee">Coffee</Link></li>
             </ul>
           </div>
 
@@ -86,6 +120,9 @@ export default function Footer() {
                 </div>
               ))}
             </div>
+            <p style={{ marginTop: '1rem', fontSize: '0.875rem', color: 'var(--clr-text-muted)' }}>
+              {restaurant.address.street}, {restaurant.address.locality} {restaurant.address.postalCode}
+            </p>
           </div>
         </div>
 

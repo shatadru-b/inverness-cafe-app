@@ -5,15 +5,21 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/lib/CartContext';
 import { useRestaurant } from '@/lib/RestaurantContext';
+import { RESERVATIONS_ENABLED } from '@/lib/features';
 
-const SECTION_IDS = ['home', 'menu', 'reserve', 'about', 'contact'];
+const SECTION_IDS = RESERVATIONS_ENABLED
+  ? ['home', 'menu', 'reserve', 'about', 'contact']
+  : ['home', 'menu', 'about', 'contact'];
 
+/** hrefs are crawlable SEO routes; on home we still smooth-scroll to sections */
 const navItems = [
-  { id: 'home', label: 'Home' },
-  { id: 'menu', label: 'Menu' },
-  { id: 'reserve', label: 'Reserve' },
-  { id: 'about', label: 'About' },
-  { id: 'contact', label: 'Contact' },
+  { id: 'home', label: 'Home', href: '/' },
+  { id: 'menu', label: 'Menu', href: '/menu/' },
+  ...(RESERVATIONS_ENABLED
+    ? [{ id: 'reserve', label: 'Reserve', href: '/reserve/' }]
+    : []),
+  { id: 'about', label: 'About', href: '/about/' },
+  { id: 'contact', label: 'Contact', href: '/contact/' },
 ];
 
 export default function Navbar() {
@@ -87,18 +93,18 @@ export default function Navbar() {
     document.body.style.overflow = '';
   };
 
-  const goToSection = useCallback((id) => {
+  const goToSection = useCallback((id, href) => {
     closeMenu();
-    if (!isHome) {
-      router.push(`/#${id}`);
-      return;
+    if (isHome) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        window.history.replaceState(null, '', id === 'home' ? '/' : `/#${id}`);
+        setActiveSection(id);
+        return;
+      }
     }
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-      window.history.replaceState(null, '', id === 'home' ? '/' : `/#${id}`);
-      setActiveSection(id);
-    }
+    router.push(href || (id === 'home' ? '/' : `/${id}/`));
   }, [isHome, router]);
 
   if (pathname && pathname.startsWith('/admin')) {
@@ -114,11 +120,11 @@ export default function Navbar() {
     <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} role="navigation">
       <div className="container">
         <a
-          href="/#home"
+          href="/"
           className="nav-brand"
           onClick={(e) => {
             e.preventDefault();
-            goToSection('home');
+            goToSection('home', '/');
           }}
         >
           <img
@@ -129,24 +135,31 @@ export default function Navbar() {
         </a>
 
         <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          {navItems.map((item) => (
-            <a
-              key={item.id}
-              href={`/#${item.id}`}
-              className={isHome && activeSection === item.id ? 'active' : ''}
-              onClick={(e) => {
-                e.preventDefault();
-                goToSection(item.id);
-              }}
-            >
-              {item.label}
-            </a>
-          ))}
-          <Link href="/cart" className={`nav-cart-btn ${pathname === '/cart' || pathname === '/cart/' ? 'active' : ''}`} onClick={closeMenu}>
+          {navItems.map((item) => {
+            const pathActive =
+              !isHome &&
+              (item.href === '/'
+                ? false
+                : pathname === item.href || pathname === item.href.replace(/\/$/, ''));
+            return (
+              <a
+                key={item.id}
+                href={item.href}
+                className={(isHome && activeSection === item.id) || pathActive ? 'active' : ''}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToSection(item.id, item.href);
+                }}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+          <Link href="/cart/" className={`nav-cart-btn ${pathname === '/cart' || pathname === '/cart/' ? 'active' : ''}`} onClick={closeMenu}>
             Cart
             {cartCount > 0 && <span className="nav-cart-badge">{cartCount}</span>}
           </Link>
-          <Link href="/cart" className="nav-cta" onClick={closeMenu}>
+          <Link href="/cart/" className="nav-cta" onClick={closeMenu}>
             Order Now
           </Link>
         </div>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>ARCHIVE — Reservation section (not served live)</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; color: #1c1917; }
+    h1, h2 { font-family: Georgia, serif; }
+    code, pre { background: #f5f5f4; padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.9em; }
+    pre { padding: 1rem; overflow: auto; white-space: pre-wrap; }
+    .note { border-left: 4px solid #f59e0b; padding: 0.75rem 1rem; background: #fffbeb; margin: 1.5rem 0; }
+    .snapshot { border: 1px solid #d6d3d1; border-radius: 8px; padding: 1.25rem; background: #fafaf9; margin-top: 1rem; }
+    .snapshot h2 { margin-top: 0; }
+    label { display: block; font-weight: 600; margin-top: 0.75rem; }
+    input, select, textarea { width: 100%; max-width: 28rem; padding: 0.5rem; margin-top: 0.25rem; }
+    button { margin-top: 1rem; padding: 0.6rem 1rem; }
+    ul { padding-left: 1.25rem; }
+  </style>
+</head>
+<body>
+  <h1>Reservation section — offline archive</h1>
+  <p class="note">
+    <strong>This file is not part of the live site build.</strong>
+    It is a restore guide + static HTML snapshot so reservations can be turned back on
+    without rewriting the feature from scratch.
+  </p>
+
+  <h2>How to re-enable (single prompt / one change)</h2>
+  <ol>
+    <li>
+      Set <code>RESERVATIONS_ENABLED = true</code> in
+      <code>lib/features.js</code>
+    </li>
+    <li>
+      Confirm these still exist (they were never deleted):
+      <ul>
+        <li><code>components/sections/ReserveSection.js</code></li>
+        <li><code>components/sections/reserve.module.css</code></li>
+        <li><code>app/reserve/page.js</code></li>
+      </ul>
+    </li>
+    <li>
+      When the flag is <code>true</code>, the app already wires:
+      <ul>
+        <li>Homepage: <code>&lt;ReserveSection /&gt;</code></li>
+        <li>Navbar item: Reserve → <code>/reserve/</code></li>
+        <li>Footer: Reservations link</li>
+        <li>Hero secondary CTA: Book a Table</li>
+        <li>About CTAs: Book a Table</li>
+        <li>Sitemap: <code>/reserve/</code></li>
+        <li>Public <code>/reserve/</code> page (no redirect)</li>
+      </ul>
+    </li>
+    <li>Run <code>npm run build</code> and deploy.</li>
+  </ol>
+
+  <h2>Source of truth (React)</h2>
+  <pre>components/sections/ReserveSection.js
+components/sections/reserve.module.css
+app/reserve/page.js
+lib/features.js  → RESERVATIONS_ENABLED</pre>
+
+  <h2>Static HTML snapshot (structure only)</h2>
+  <p>
+    Markup mirror of the Book a Table section for reference.
+    Live UI uses the React component above, not this file.
+  </p>
+
+  <div class="snapshot">
+    <section id="reserve" class="site-section section-padding" aria-label="Book a Table (archived snapshot)">
+      <div class="container">
+        <header class="section-header">
+          <div class="section-tag">Reservations</div>
+          <h2 class="section-title">Book a Table</h2>
+          <p class="section-subtitle">
+            Reserve your spot for a wonderful dining experience at our Academy Street restaurant
+          </p>
+        </header>
+
+        <div class="reserveGrid">
+          <form class="reserveForm" action="#" method="post">
+            <h3>Reservation Details</h3>
+
+            <label>Your Name *
+              <input type="text" name="name" placeholder="John Smith" required />
+            </label>
+            <label>Phone *
+              <input type="tel" name="phone" placeholder="+44 7700 900000" required />
+            </label>
+            <label>Email (optional)
+              <input type="email" name="email" placeholder="john@example.com" />
+            </label>
+            <label>Date *
+              <input type="date" name="date" required />
+            </label>
+            <label>Time *
+              <select name="time" required>
+                <option value="">Select a time</option>
+                <option>11:00</option>
+                <option>11:30</option>
+                <option>12:00</option>
+                <option>…</option>
+                <option>22:00</option>
+              </select>
+            </label>
+            <label>Party Size
+              <select name="partySize">
+                <option value="1">1 guest</option>
+                <option value="2" selected>2 guests</option>
+                <option value="3">3 guests</option>
+                <option value="4">4 guests</option>
+                <option value="10+">10+ guests (call us)</option>
+              </select>
+            </label>
+            <label>Special Requests
+              <textarea name="specialRequests" placeholder="High chair, birthday, dietary requirements…"></textarea>
+            </label>
+            <button type="submit">Confirm Reservation</button>
+          </form>
+
+          <aside class="reserveInfo">
+            <div class="infoCard">
+              <h3>Opening Hours</h3>
+              <p>Mon – Thu: 11:00 – 22:00</p>
+              <p>Fri – Sat: 11:00 – 23:00</p>
+              <p>Sunday: 12:00 – 21:00</p>
+            </div>
+            <div class="infoCard">
+              <h3>Prefer to Call?</h3>
+              <p>Ring us directly on</p>
+              <p><a href="tel:+447554284033">+44 7554 284033</a></p>
+            </div>
+            <div class="infoCard">
+              <h3>Large Groups?</h3>
+              <p>For parties of 10+, please call us to discuss arrangements and special menus.</p>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <p style="margin-top:2rem;color:#78716c;font-size:0.9rem;">
+    Inverness Cafe &amp; Pizzeria — archive only. Do not copy into <code>public/</code> unless you intend to host it.
+  </p>
+</body>
+</html>

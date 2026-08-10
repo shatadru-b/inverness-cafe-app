@@ -182,3 +182,147 @@ exports.paymentConfig = onRequest(
     });
   }
 );
+
+// ---------------------------------------------------------------------------
+// Google reviews (live) — Places Details API
+// Configure in functions/.env (never commit):
+//   GOOGLE_PLACES_API_KEY=...
+//   GOOGLE_PLACE_ID=ChIJX6sDqiVxj0gR9MQnrSXXgrk   (optional override)
+// ---------------------------------------------------------------------------
+
+const googlePlacesApiKey = defineString('GOOGLE_PLACES_API_KEY', { default: '' });
+const googlePlaceId = defineString('GOOGLE_PLACE_ID', {
+  default: 'ChIJX6sDqiVxj0gR9MQnrSXXgrk',
+});
+
+/** Short in-memory cache so we don't burn Places quota on every page view */
+const reviewsCache = {
+  key: '',
+  expires: 0,
+  payload: null,
+};
+const REVIEWS_CACHE_MS = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Sort: 5★ first (newest among them), then by rating desc, then date desc.
+ */
+function sortReviewsFiveStarFirst(reviews) {
+  const withText = (reviews || []).filter((r) => (r.text || '').trim());
+  const byDateDesc = (a, b) => (b.time || 0) - (a.time || 0);
+  const five = withText.filter((r) => Number(r.rating) === 5).sort(byDateDesc);
+  const rest = withText
+    .filter((r) => Number(r.rating) !== 5)
+    .sort((a, b) => {
+      const ra = Number(a.rating) || 0;
+      const rb = Number(b.rating) || 0;
+      if (rb !== ra) return rb - ra;
+      return byDateDesc(a, b);
+    });
+  return [...five, ...rest];
+}
+
+async function fetchPlaceReviewsFromGoogle(placeId, apiKey) {
+  // Legacy Place Details supports reviews_sort=newest (latest first from Google)
+  const params = new URLSearchParams({
+    place_id: placeId,
+    fields: 'name,rating,user_ratings_total,reviews',
+    reviews_sort: 'newest',
+    language: 'en',
+    key: apiKey,
+  });
+  const url = `https://maps.googleapis.com/maps/api/place/details/json?${params}`;
+  const resp = await fetch(url);
+  const json = await resp.json();
+  if (json.status !== 'OK' && json.status !== 'ZERO_RESULTS') {
+    const err = new Error(json.error_message || `Places API status: ${json.status}`);
+    err.code = json.status;
+    throw err;
+  }
+  const result = json.result || {};
+  const reviews = (result.reviews || []).map((r) => ({
+    authorName: r.author_name || 'Google reviewer',
+    rating: Number(r.rating) || 0,
+    text: r.text || '',
+    time: Number(r.time) || 0, // unix seconds
+    relativeTime: r.relative_time_description || '',
+    language: r.language || '',
+    profilePhotoUrl: r.profile_photo_url || '',
+  }));
+  return {
+    name: result.name || null,
+    rating: result.rating ?? null,
+    userRatingsTotal: result.user_ratings_total ?? null,
+    reviews: sortReviewsFiveStarFirst(reviews),
+    source: 'google-places',
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+function reviewsCors(res) {
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Accept');
+  res.set('Cache-Control', 'public, max-age=300, s-maxage=300');
+}
+
+exports.googleReviews = onRequest(
+  {
+    cors: true,
+    invoker: 'public',
+  },
+  async (req, res) => {
+    reviewsCors(res);
+    if (req.method === 'OPTIONS') {
+      res.status(204).send('');
+      return;
+    }
+    if (req.method !== 'GET') {
+      res.status(405).json({ error: 'Method not allowed' });
+      return;
+    }
+
+    const apiKey =
+      googlePlacesApiKey.value() || process.env.GOOGLE_PLACES_API_KEY || '';
+    const placeId =
+      (req.query && (req.query.placeId || req.query.place_id)) ||
+      googlePlaceId.value() ||
+      process.env.GOOGLE_PLACE_ID ||
+      'ChIJX6sDqiVxj0gR9MQnrSXXgrk';
+
+    if (!apiKey) {
+      res.status(503).json({
+        error:
+          'Google Places API key not configured. Set GOOGLE_PLACES_API_KEY in functions/.env and redeploy functions.',
+        reviews: [],
+        source: 'unconfigured',
+      });
+      return;
+    }
+
+    const cacheKey = `${placeId}`;
+    if (
+      reviewsCache.payload &&
+      reviewsCache.key === cacheKey &&
+      Date.now() < reviewsCache.expires
+    ) {
+      res.status(200).json({ ...reviewsCache.payload, cached: true, limit: 6 });
+      return;
+    }
+
+    try {
+      const payload = await fetchPlaceReviewsFromGoogle(placeId, apiKey);
+      reviewsCache.key = cacheKey;
+      reviewsCache.expires = Date.now() + REVIEWS_CACHE_MS;
+      reviewsCache.payload = payload;
+      res.status(200).json({ ...payload, cached: false, limit: 6 });
+    } catch (err) {
+      console.error('googleReviews error:', err);
+      res.status(502).json({
+        error: err.message || 'Failed to fetch Google reviews',
+        code: err.code || null,
+        reviews: [],
+        source: 'error',
+      });
+    }
+  }
+);

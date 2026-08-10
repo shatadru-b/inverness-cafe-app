@@ -9,6 +9,7 @@ import AboutSection from '@/components/sections/AboutSection';
 import ContactSection from '@/components/sections/ContactSection';
 import { useRestaurant } from '@/lib/RestaurantContext';
 import { getOpeningStatus } from '@/lib/openingHours';
+import { RESERVATIONS_ENABLED } from '@/lib/features';
 
 function scrollToSection(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -61,7 +62,7 @@ export default function HomePage() {
       <section id="home" className="site-section">
         <div className={styles.hero}>
           <div className={styles.heroBg}>
-            <Image src={images.hero} alt={`${restaurant.shortName} interior`} fill style={{ objectFit: 'cover' }} priority />
+            <Image src={images.hero} alt={`${restaurant.name} – Italian restaurant on Academy Street, Inverness`} fill style={{ objectFit: 'cover' }} priority />
           </div>
           <div className={styles.heroOverlay}></div>
           <div className="container" style={{ position: 'relative', zIndex: 2 }}>
@@ -91,8 +92,22 @@ export default function HomePage() {
               </p>
               <div className={styles.heroButtons}>
                 <button type="button" className="btn btn-primary" onClick={() => scrollToSection('menu')}>View Our Menu</button>
-                <button type="button" className="btn btn-outline" onClick={() => scrollToSection('reserve')}>Book a Table</button>
+                {RESERVATIONS_ENABLED ? (
+                  <button type="button" className="btn btn-outline" onClick={() => scrollToSection('reserve')}>Book a Table</button>
+                ) : (
+                  <button type="button" className="btn btn-outline" onClick={() => scrollToSection('contact')}>Contact Us</button>
+                )}
               </div>
+              <p className={styles.heroDesc} style={{ marginTop: '1rem', fontSize: '0.95rem' }}>
+                Explore{' '}
+                <a href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>our pizza menu</a>
+                {', '}
+                <a href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>fresh pasta</a>
+                {', '}
+                <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>takeaway in Inverness</a>
+                {' or '}
+                <a href="/about/" style={{ color: 'var(--clr-amber-400)' }}>our story</a>.
+              </p>
               <div className={styles.heroStats}>
                 {hero.stats.map((s) => (
                   <div key={s.label}>
@@ -104,15 +119,16 @@ export default function HomePage() {
             </div>
           </div>
           <div className={styles.heroFloatImages}>
-            <img className={styles.heroFloatImg} src={images.pizzaHero} alt="Pizza" />
-            <img className={styles.heroFloatImg} src={images.pastaHero} alt="Pasta" style={{ animationDelay: '-2s', marginLeft: '40px' }} />
-            <img className={styles.heroFloatImg} src={images.burgerHero} alt="Burger" style={{ animationDelay: '-4s' }} />
+            <img className={styles.heroFloatImg} src={images.pizzaHero} alt={`Margherita pizza at ${restaurant.name}`} />
+            <img className={styles.heroFloatImg} src={images.pastaHero} alt={`Fresh pasta at ${restaurant.name}`} style={{ animationDelay: '-2s', marginLeft: '40px' }} />
+            <img className={styles.heroFloatImg} src={images.burgerHero} alt={`Gourmet burger at ${restaurant.name}`} style={{ animationDelay: '-4s' }} />
           </div>
         </div>
       </section>
 
       <MenuSection />
-      <ReserveSection />
+      {/* Reservations UI gated — component kept; see archive/reservation-section.html */}
+      {RESERVATIONS_ENABLED ? <ReserveSection /> : null}
       <AboutSection />
       <ContactSection />
     </>

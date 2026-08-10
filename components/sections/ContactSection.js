@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRestaurant } from '@/lib/RestaurantContext';
 import styles from './contact.module.css';
 
-export default function ContactSection() {
+export default function ContactSection({ hideHeader = false } = {}) {
   const restaurant = useRestaurant();
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '', _gotcha: '' });
   const [submitted, setSubmitted] = useState(false);
@@ -95,17 +95,19 @@ export default function ContactSection() {
     <section id="contact" className="site-section">
       <div className="section-padding" style={{ background: 'var(--clr-bg-primary)' }}>
         <div className="container">
-          <div className="section-header">
-            <div className="section-tag">Contact</div>
-            <h2 className="section-title">Get in Touch</h2>
-            <p className="section-subtitle">We&apos;d love to hear from you</p>
-          </div>
+          {!hideHeader && (
+            <div className="section-header">
+              <div className="section-tag">Contact</div>
+              <h2 className="section-title">Get in Touch</h2>
+              <p className="section-subtitle">We&apos;d love to hear from you</p>
+            </div>
+          )}
 
           <div className={styles.contactGrid}>
             <div className={styles.contactInfo}>
               <h3 style={{ fontFamily: 'var(--ff-heading)', fontSize: '2rem', marginBottom: '1.5rem' }}>Contact Information</h3>
               <p style={{ color: 'var(--clr-text-secondary)', marginBottom: '2.5rem', lineHeight: 1.7 }}>
-                Whether you have a question about our menu, want to book a large party, or just want to say hello, we&apos;re here for you.
+                Visit us on Academy Street in Inverness, or get in touch if you have a question about our Italian menu, want to book a large party, or just want to say hello.
               </p>
 
               <div className={styles.infoBlocks}>

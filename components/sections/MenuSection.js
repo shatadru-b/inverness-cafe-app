@@ -53,8 +53,24 @@ function scrollYForCategory(cat, stickyEl) {
   return Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset + SCROLL_OVERSHOOT_PX);
 }
 
-export default function MenuSection() {
-  const [activeCategory, setActiveCategory] = useState('pizza');
+/**
+ * @param {object} [props]
+ * @param {string[]} [props.onlyCategories] Limit to these category keys (e.g. ['pizza'])
+ * @param {string} [props.heading] Override section H2 title
+ * @param {string} [props.subtitle] Override section subtitle
+ * @param {boolean} [props.hideHeader] Hide the default section header (when page has its own H1)
+ */
+export default function MenuSection({
+  onlyCategories,
+  heading = 'Our Menu',
+  subtitle = 'Crafted with passion, served with love',
+  hideHeader = false,
+} = {}) {
+  const categoryKeys = onlyCategories?.length
+    ? onlyCategories.filter((c) => defaultMenuData[c])
+    : categories;
+  const initialCat = categoryKeys[0] || 'pizza';
+  const [activeCategory, setActiveCategory] = useState(initialCat);
   const [customiseItem, setCustomiseItem] = useState(null);
   const { cartItems, addToCart, updateQuantity } = useCart();
   const stickyRef = useRef(null);
@@ -141,8 +157,8 @@ export default function MenuSection() {
 
       const offset = getStickyOffsetPx(stickyRef.current);
       const line = offset + SPY_SLACK_PX;
-      let current = categories[0];
-      for (const cat of categories) {
+      let current = categoryKeys[0];
+      for (const cat of categoryKeys) {
         const el = document.getElementById(categoryAnchorId(cat));
         if (!el) continue;
         // Activate once header reaches sticky strip (with slack for iOS undershoot)
@@ -170,7 +186,7 @@ export default function MenuSection() {
       window.visualViewport?.removeEventListener('resize', onScroll);
       if (unlockTimerRef.current) clearTimeout(unlockTimerRef.current);
     };
-  }, []);
+  }, [categoryKeys.join('|')]);
 
   /** Total qty of this menu item across all cart line variants. */
   const qtyForItem = (itemId) =>
@@ -214,7 +230,11 @@ export default function MenuSection() {
       <article className={styles.itemCard} key={item.id}>
         <div className={styles.itemCardImage}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={imageSrc} alt={item.name} loading="lazy" />
+          <img
+            src={imageSrc}
+            alt={`${item.name} at Inverness Cafe & Pizzeria`}
+            loading="lazy"
+          />
           {!item.available && (
             <div className={styles.itemCardSoldOut}>
               <span>Sold Out</span>
@@ -283,32 +303,38 @@ export default function MenuSection() {
     );
   };
 
+  const showTabs = categoryKeys.length > 1;
+
   return (
     <section id="menu" className="site-section section-padding" style={{ background: 'var(--clr-bg-primary)' }}>
       <div className="container">
-        <div className="section-header">
-          <div className="section-tag">Full Menu</div>
-          <h2 className="section-title">Our Menu</h2>
-          <p className="section-subtitle">Crafted with passion, served with love</p>
-        </div>
-
-        <div className={styles.tabsSticky} ref={stickyRef}>
-          <div className={styles.tabs}>
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                className={`menu-tab${activeCategory === cat ? ' active' : ''}`}
-                aria-current={activeCategory === cat ? 'true' : undefined}
-                onClick={() => scrollToCategory(cat)}
-              >
-                {defaultMenuData[cat].title}
-              </button>
-            ))}
+        {!hideHeader && (
+          <div className="section-header">
+            <div className="section-tag">Full Menu</div>
+            <h2 className="section-title">{heading}</h2>
+            <p className="section-subtitle">{subtitle}</p>
           </div>
-        </div>
+        )}
 
-        {categories.map((cat) => {
+        {showTabs && (
+          <div className={styles.tabsSticky} ref={stickyRef}>
+            <div className={styles.tabs}>
+              {categoryKeys.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`menu-tab${activeCategory === cat ? ' active' : ''}`}
+                  aria-current={activeCategory === cat ? 'true' : undefined}
+                  onClick={() => scrollToCategory(cat)}
+                >
+                  {defaultMenuData[cat].title}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {categoryKeys.map((cat) => {
           const data = defaultMenuData[cat];
           return (
             <div key={cat} id={categoryAnchorId(cat)} className={styles.categoryBlock}>
