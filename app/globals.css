@@ -217,8 +217,9 @@ select.form-input { appearance: none; background-image: url("data:image/svg+xml,
 .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 3rem; margin-bottom: 3rem; }
 .footer-brand-text { color: var(--clr-text-secondary); font-size: 0.875rem; line-height: 1.7; margin-top: 1rem; max-width: 300px; }
 .footer-social { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-.footer-social a { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--clr-bg-card); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); font-size: 1.125rem; transition: all var(--transition-fast); }
+.footer-social a { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: var(--clr-bg-card); border: 1px solid var(--clr-border); border-radius: var(--radius-lg); transition: all var(--transition-fast); }
 .footer-social a:hover { background: rgba(245,158,11,0.1); border-color: var(--clr-amber-600); transform: translateY(-3px); }
+.footer-social img { width: 24px; height: 24px; object-fit: contain; }
 .footer-column h4 { font-family: var(--ff-heading); font-size: 1.125rem; font-weight: 600; margin-bottom: 1.25rem; }
 .footer-column ul { display: flex; flex-direction: column; gap: 0.75rem; }
 .footer-column a { font-size: 0.875rem; color: var(--clr-text-muted); transition: color var(--transition-fast), padding-left var(--transition-fast); }

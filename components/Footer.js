@@ -63,10 +63,22 @@ export default function Footer() {
               {restaurant.content.footerBlurb}
             </p>
             <div className="footer-social">
-              {/* Social URLs are placeholders (#) — keep for layout, not for Schema sameAs */}
-              <a href={restaurant.social.facebook} aria-label="Facebook">FB</a>
-              <a href={restaurant.social.instagram} aria-label="Instagram">IG</a>
-              <a href={restaurant.social.tripadvisor} aria-label="TripAdvisor">TA</a>
+              <a
+                href={restaurant.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+              >
+                <img src="/images/instagram.png" alt="" width={24} height={24} />
+              </a>
+              <a
+                href={restaurant.social.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="YouTube"
+              >
+                <img src="/images/youtube.png" alt="" width={24} height={24} />
+              </a>
             </div>
           </div>
 
