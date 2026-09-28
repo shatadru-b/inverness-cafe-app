@@ -30,15 +30,15 @@ export default function MenuPage() {
           <SeoPageHeader
             tag="Full Menu"
             title="Our Menu – Italian Food in Inverness"
-            lead={`Order authentic Italian pizza, pasta and more from ${restaurant.name} on Academy Street. Add items to your cart for takeaway or collection.`}
+            lead={`Order authentic Italian pizza, pasta and more from ${restaurant.name} on Academy Street.`}
           />
           <p style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--clr-text-muted)' }}>
             Looking for something specific?{' '}
-            <a href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>View our pizza menu</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>View our pizza menu</a>
             {', '}
-            <a href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>pasta</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>pasta</a>
             {' or '}
-            <a href="/menu/burgers/" style={{ color: 'var(--clr-amber-400)' }}>burgers</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>burgers</a>
             {'. '}
             Prefer collection? See our{' '}
             <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>takeaway options</a>.

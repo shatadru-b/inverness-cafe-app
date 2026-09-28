@@ -34,11 +34,11 @@ export default function PastaMenuPage() {
             lead="Classic Italian pasta dishes at our restaurant on Academy Street. Pick your shape — penne, fusilli or spaghetti — when you order."
           />
           <p style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--clr-text-muted)' }}>
-            <a href="/menu/" style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
             {' · '}
-            <a href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>Pizza</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Pizza</a>
             {' · '}
-            <a href="/menu/burgers/" style={{ color: 'var(--clr-amber-400)' }}>Burgers</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Burgers</a>
             {' · '}
             <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway</a>
           </p>

@@ -89,7 +89,7 @@ export default function Footer() {
                 <Link href="/" onClick={(e) => goToSection('home', e, { href: '/' })}>Home</Link>
               </li>
               <li>
-                <Link href="/menu/" onClick={(e) => goToSection('menu', e, { href: '/menu/' })}>Our Menu</Link>
+                <a href={restaurant.orderUrl}>Our Menu</a>
               </li>
               {RESERVATIONS_ENABLED ? (
                 <li>
@@ -111,14 +111,14 @@ export default function Footer() {
           <div className="footer-column">
             <h4>Our Menu</h4>
             <ul>
-              <li><Link href="/menu/pizza/">Pizza</Link></li>
-              <li><Link href="/menu/pasta/">Pasta</Link></li>
-              <li><Link href="/menu/burgers/">Burgers</Link></li>
-              <li><Link href="/menu/?cat=kitchen">Kitchen Food</Link></li>
-              <li><Link href="/menu/?cat=sides">Side Plates</Link></li>
-              <li><Link href="/menu/?cat=juices">Juices</Link></li>
-              <li><Link href="/menu/?cat=shakes">Shakes</Link></li>
-              <li><Link href="/menu/?cat=coffee">Coffee</Link></li>
+              <li><a href={restaurant.orderUrl}>Pizza</a></li>
+              <li><a href={restaurant.orderUrl}>Pasta</a></li>
+              <li><a href={restaurant.orderUrl}>Burgers</a></li>
+              <li><a href={restaurant.orderUrl}>Kitchen Food</a></li>
+              <li><a href={restaurant.orderUrl}>Side Plates</a></li>
+              <li><a href={restaurant.orderUrl}>Juices</a></li>
+              <li><a href={restaurant.orderUrl}>Shakes</a></li>
+              <li><a href={restaurant.orderUrl}>Coffee</a></li>
             </ul>
           </div>
 

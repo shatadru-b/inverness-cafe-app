@@ -141,6 +141,18 @@ export default function Navbar() {
               (item.href === '/'
                 ? false
                 : pathname === item.href || pathname === item.href.replace(/\/$/, ''));
+            if (item.id === 'menu') {
+              return (
+                <a
+                  key={item.id}
+                  href={restaurant.orderUrl}
+                  className={(isHome && activeSection === item.id) || pathActive ? 'active' : ''}
+                  onClick={closeMenu}
+                >
+                  {item.label}
+                </a>
+              );
+            }
             return (
               <a
                 key={item.id}

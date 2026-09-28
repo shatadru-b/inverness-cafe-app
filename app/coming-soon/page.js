@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { useRestaurant } from '@/lib/RestaurantContext';
 import { getWhatsAppLink } from '@/lib/whatsapp';
 import styles from './coming-soon.module.css';
@@ -32,9 +31,9 @@ export default function ComingSoonPage() {
           <a href={`tel:${restaurant.phone.e164}`} className="btn btn-outline">
             Call {restaurant.phone.display}
           </a>
-          <Link href="/#menu" className="btn btn-outline">
+          <a href={restaurant.orderUrl} className="btn btn-outline">
             View Menu
-          </Link>
+          </a>
         </div>
       </div>
     </section>

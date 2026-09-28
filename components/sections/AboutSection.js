@@ -20,8 +20,7 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
       el.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    if (id === 'menu') router.push('/menu/');
-    else if (id === 'reserve') router.push(RESERVATIONS_ENABLED ? '/reserve/' : '/contact/');
+    if (id === 'reserve') router.push(RESERVATIONS_ENABLED ? '/reserve/' : '/contact/');
     else if (id === 'contact') router.push('/contact/');
     else router.push(`/#${id}`);
   };
@@ -158,16 +157,16 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
                   <p>{item.desc}</p>
                   <div className={styles.featuredFooter}>
                     <span className={styles.featuredPrice}>{item.price}</span>
-                    <button type="button" className="btn btn-sm btn-primary" onClick={() => goTo('menu')}>View Menu</button>
+                    <a href={restaurant.orderUrl} className="btn btn-sm btn-primary">View Menu</a>
                   </div>
                 </div>
               </div>
             ))}
           </div>
           <p style={{ textAlign: 'center', marginTop: '1.5rem' }}>
-            <Link href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>View our pizza menu</Link>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>View our pizza menu</a>
             {' · '}
-            <Link href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>Fresh pasta</Link>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Fresh pasta</a>
             {' · '}
             <Link href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway in Inverness</Link>
           </p>
@@ -201,7 +200,7 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
             Order online, book a table, or pop in and visit us. We can&apos;t wait to serve you!
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button type="button" className="btn btn-primary" onClick={() => goTo('menu')}>Order Online</button>
+            <a href={restaurant.orderUrl} className="btn btn-primary">Order Online</a>
             {RESERVATIONS_ENABLED ? (
               <button type="button" className="btn btn-outline" onClick={() => goTo('reserve')}>Book a Table</button>
             ) : (
@@ -225,7 +224,7 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
             ) : (
               <button type="button" className="btn btn-primary" onClick={() => goTo('contact')}>Contact Us</button>
             )}
-            <button type="button" className="btn btn-outline" onClick={() => goTo('menu')}>Explore Menu</button>
+            <a href={restaurant.orderUrl} className="btn btn-outline">Explore Menu</a>
           </div>
         </div>
       </div>

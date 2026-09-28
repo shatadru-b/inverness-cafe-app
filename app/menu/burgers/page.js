@@ -34,11 +34,11 @@ export default function BurgersMenuPage() {
             lead="Juicy burgers and combos from our kitchen on Academy Street — ideal for a hearty dine-in meal or takeaway in Inverness."
           />
           <p style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--clr-text-muted)' }}>
-            <a href="/menu/" style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
             {' · '}
-            <a href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>Pizza</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Pizza</a>
             {' · '}
-            <a href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>Pasta</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Pasta</a>
             {' · '}
             <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway</a>
           </p>

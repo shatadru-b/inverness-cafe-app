@@ -34,11 +34,11 @@ export default function PizzaMenuPage() {
             lead="Hand-stretched dough and classic Italian toppings at our Academy Street pizzeria. Add extras when you order — perfect for dine-in or takeaway."
           />
           <p style={{ textAlign: 'center', marginBottom: '1rem', color: 'var(--clr-text-muted)' }}>
-            <a href="/menu/" style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Full menu</a>
             {' · '}
-            <a href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>Pasta</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Pasta</a>
             {' · '}
-            <a href="/menu/burgers/" style={{ color: 'var(--clr-amber-400)' }}>Burgers</a>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Burgers</a>
             {' · '}
             <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway</a>
           </p>

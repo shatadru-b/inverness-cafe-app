@@ -94,9 +94,9 @@ export default function CartPage() {
               </p>
             )}
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/#menu" className="btn btn-primary">
+              <a href={restaurant.orderUrl} className="btn btn-primary">
                 Order More
-              </Link>
+              </a>
               <Link href="/" className="btn btn-outline">
                 Back to Home
               </Link>
@@ -126,9 +126,9 @@ export default function CartPage() {
             <p style={{ color: 'var(--clr-text-muted)', marginBottom: '2rem' }}>
               Browse our menu and add some delicious items!
             </p>
-            <Link href="/#menu" className="btn btn-primary">
+            <a href={restaurant.orderUrl} className="btn btn-primary">
               View Menu
-            </Link>
+            </a>
           </div>
         </section>
       </>
@@ -140,7 +140,7 @@ export default function CartPage() {
       <div className="page-header">
         <div className="container">
           <div className="breadcrumb">
-            <a href="/">Home</a> <span>/</span> <a href="/#menu">Menu</a> <span>/</span> <span>Cart</span>
+            <a href="/">Home</a> <span>/</span> <a href={restaurant.orderUrl}>Menu</a> <span>/</span> <span>Cart</span>
           </div>
           <h1>Your Order</h1>
           <p>

@@ -91,7 +91,7 @@ export default function HomePage() {
                 {hero.description}
               </p>
               <div className={styles.heroButtons}>
-                <button type="button" className="btn btn-primary" onClick={() => scrollToSection('menu')}>View Our Menu</button>
+                <a href={restaurant.orderUrl} className="btn btn-primary">View Our Menu</a>
                 {RESERVATIONS_ENABLED ? (
                   <button type="button" className="btn btn-outline" onClick={() => scrollToSection('reserve')}>Book a Table</button>
                 ) : (
@@ -100,9 +100,9 @@ export default function HomePage() {
               </div>
               <p className={styles.heroDesc} style={{ marginTop: '1rem', fontSize: '0.95rem' }}>
                 Explore{' '}
-                <a href="/menu/pizza/" style={{ color: 'var(--clr-amber-400)' }}>our pizza menu</a>
+                <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>our pizza menu</a>
                 {', '}
-                <a href="/menu/pasta/" style={{ color: 'var(--clr-amber-400)' }}>fresh pasta</a>
+                <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>fresh pasta</a>
                 {', '}
                 <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>takeaway in Inverness</a>
                 {' or '}
