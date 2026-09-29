@@ -103,6 +103,7 @@
 }
 
 @media (max-width: 768px) {
+  .heroBg img { object-position: 72% center; }
   .heroContent h1 { font-size: 2.5rem; }
   .heroStats { gap: 1.5rem; flex-wrap: wrap; }
   .statValue { font-size: 1.875rem; }
