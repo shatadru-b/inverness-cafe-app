@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from '@/app/home.module.css';
 import { useRestaurant } from '@/lib/RestaurantContext';
@@ -20,8 +19,8 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
       el.scrollIntoView({ behavior: 'smooth' });
       return;
     }
-    if (id === 'reserve') router.push(RESERVATIONS_ENABLED ? '/reserve/' : '/contact/');
-    else if (id === 'contact') router.push('/contact/');
+    if (id === 'reserve') router.push(RESERVATIONS_ENABLED ? '/reserve/' : '/#contact');
+    else if (id === 'contact') router.push('/#contact');
     else router.push(`/#${id}`);
   };
 
@@ -168,7 +167,7 @@ export default function AboutSection({ hideIntroHeader = false } = {}) {
             {' · '}
             <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Fresh pasta</a>
             {' · '}
-            <Link href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>Takeaway in Inverness</Link>
+            <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>Takeaway in Inverness</a>
           </p>
         </div>
       </div>

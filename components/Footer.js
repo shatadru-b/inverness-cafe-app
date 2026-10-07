@@ -17,11 +17,7 @@ export default function Footer() {
 
   const goToSection = (id, e, options = {}) => {
     const { cat, href } = options;
-    // Prefer real SEO routes when leaving home; on home, smooth-scroll
-    if (href && !isHome) {
-      // let Link/default navigation work
-      return;
-    }
+    if (href && !isHome) return;
     if (href && isHome && (id === 'menu' || id === 'reserve' || id === 'about' || id === 'contact' || id === 'home')) {
       e.preventDefault();
       const targetId = cat ? `menu-${cat}` : id;
@@ -97,13 +93,13 @@ export default function Footer() {
                 </li>
               ) : null}
               <li>
-                <Link href="/about/" onClick={(e) => goToSection('about', e, { href: '/about/' })}>About Us</Link>
+                <Link href="/#about" onClick={(e) => goToSection('about', e, { href: '/#about' })}>About Us</Link>
               </li>
               <li>
-                <Link href="/contact/" onClick={(e) => goToSection('contact', e, { href: '/contact/' })}>Contact</Link>
+                <Link href="/#contact" onClick={(e) => goToSection('contact', e, { href: '/#contact' })}>Contact</Link>
               </li>
               <li>
-                <Link href="/takeaway/">Takeaway</Link>
+                <a href={restaurant.orderUrl}>Takeaway</a>
               </li>
             </ul>
           </div>

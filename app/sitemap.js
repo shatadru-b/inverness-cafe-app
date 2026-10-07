@@ -10,6 +10,6 @@ export default function sitemap() {
     url: absoluteUrl(path, restaurant),
     lastModified,
     changeFrequency: path === '/' ? 'weekly' : 'monthly',
-    priority: path === '/' ? 1 : path.startsWith('/menu') ? 0.9 : 0.7,
+    priority: path === '/' ? 1 : 0.7,
   }));
 }

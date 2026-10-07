@@ -11,15 +11,14 @@ const SECTION_IDS = RESERVATIONS_ENABLED
   ? ['home', 'menu', 'reserve', 'about', 'contact']
   : ['home', 'menu', 'about', 'contact'];
 
-/** hrefs are crawlable SEO routes; on home we still smooth-scroll to sections */
 const navItems = [
   { id: 'home', label: 'Home', href: '/' },
-  { id: 'menu', label: 'Menu', href: '/menu/' },
+  { id: 'menu', label: 'Menu', href: '#menu' },
   ...(RESERVATIONS_ENABLED
     ? [{ id: 'reserve', label: 'Reserve', href: '/reserve/' }]
     : []),
-  { id: 'about', label: 'About', href: '/about/' },
-  { id: 'contact', label: 'Contact', href: '/contact/' },
+  { id: 'about', label: 'About', href: '/#about' },
+  { id: 'contact', label: 'Contact', href: '/#contact' },
 ];
 
 export default function Navbar() {

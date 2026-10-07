@@ -23,6 +23,13 @@
       ],
       "cleanUrls": true,
       "trailingSlash": true,
+      "redirects": [
+        {
+          "regex": "^/(menu|about|contact|takeaway|coming-soon)(/.*)?$",
+          "destination": "/",
+          "type": 301
+        }
+      ],
       "rewrites": [
         {
           "source": "/api/createPayment",
@@ -59,6 +66,13 @@
       ],
       "cleanUrls": true,
       "trailingSlash": true,
+      "redirects": [
+        {
+          "regex": "^/(menu|about|contact|takeaway|coming-soon)(/.*)?$",
+          "destination": "/",
+          "type": 301
+        }
+      ],
       "rewrites": [
         {
           "source": "/api/createPayment",

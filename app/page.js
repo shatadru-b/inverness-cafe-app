@@ -104,9 +104,9 @@ export default function HomePage() {
                 {', '}
                 <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>fresh pasta</a>
                 {', '}
-                <a href="/takeaway/" style={{ color: 'var(--clr-amber-400)' }}>takeaway in Inverness</a>
+                <a href={restaurant.orderUrl} style={{ color: 'var(--clr-amber-400)' }}>takeaway in Inverness</a>
                 {' or '}
-                <a href="/about/" style={{ color: 'var(--clr-amber-400)' }}>our story</a>.
+                <a href="#about" style={{ color: 'var(--clr-amber-400)' }}>our story</a>.
               </p>
               <div className={styles.heroStats}>
                 {hero.stats.map((s) => (
